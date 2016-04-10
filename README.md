@@ -1,2 +1,2 @@
 # GOC
-GObject Creatior
+GObject Creator
