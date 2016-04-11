@@ -66,6 +66,9 @@
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
          <layout class="QFormLayout" name="formLayout">
+          <property name="fieldGrowthPolicy">
+           <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+          </property>
           <property name="labelAlignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
           </property>
@@ -77,37 +80,7 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QLineEdit" name="lineEdit"/>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_3">
-            <property name="text">
-             <string>蛇形标识符</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QLineEdit" name="lineEdit_2"/>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_4">
-            <property name="text">
-             <string>驼峰标识符</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QLineEdit" name="lineEdit_3"/>
-          </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="label_5">
-            <property name="text">
-             <string>大写蛇形标识符</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QLineEdit" name="lineEdit_4"/>
+           <widget class="QLineEdit" name="edtReadName"/>
           </item>
           <item row="1" column="0">
            <widget class="QLabel" name="label_6">
@@ -117,7 +90,101 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QLineEdit" name="lineEdit_5"/>
+           <widget class="QLineEdit" name="edtPrefix"/>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>蛇形标识符</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="edtSnakeID"/>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>驼峰标识符</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLineEdit" name="edtCamelID"/>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>大写蛇形标识符</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLineEdit" name="edtBigSnakeID"/>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>输出文件名</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="0">
+           <widget class="QLabel" name="label_8">
+            <property name="text">
+             <string>属性列表</string>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="0">
+           <widget class="QLabel" name="label_9">
+            <property name="text">
+             <string>信号列表</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QLineEdit" name="edtOutFilename"/>
+          </item>
+          <item row="9" column="0">
+           <widget class="QLabel" name="label_10">
+            <property name="toolTip">
+             <string>请填写获取GType的表达式/函数/宏!</string>
+            </property>
+            <property name="text">
+             <string>实现接口列表</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="1">
+           <widget class="QListWidget" name="lstProperties"/>
+          </item>
+          <item row="8" column="1">
+           <widget class="QListWidget" name="lstSignals"/>
+          </item>
+          <item row="9" column="1">
+           <widget class="QListWidget" name="lstImplInteface">
+            <property name="toolTip">
+             <string>请填写获取GType的表达式/函数/宏!</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="QLabel" name="label_11">
+            <property name="toolTip">
+             <string>请填写获取GType的表达式/函数/宏!</string>
+            </property>
+            <property name="text">
+             <string>继承的类</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QLineEdit" name="edtParentClass">
+            <property name="toolTip">
+             <string>请填写获取GType的表达式/函数/宏!</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -190,7 +257,7 @@
      <x>0</x>
      <y>0</y>
      <width>823</width>
-     <height>23</height>
+     <height>28</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
