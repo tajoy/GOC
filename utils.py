@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 import os
 import re
+import config
 
 def normal2Snake(text, prefix):
     arr = text.split(" ")
@@ -51,15 +52,72 @@ def checkNormalSyntax(text):
         index += 1
     return True
 
+def checkSnakeSyntax(text):
+    arr = text.split(" ")
+    index = 0
+    for word in arr:
+        word = word.strip()
+        if word == "":
+            index +=1
+            continue
+        if index == 0:
+            if not re.match(r"[a-z][a-z0-9_]*", word):
+                return False
+        else:
+            if not re.match(r"[a-z0-9_]+", word):
+                return False
+        index += 1
+    return True
+
+def checkCamelSyntax(text):
+    arr = text.split(" ")
+    index = 0
+    for word in arr:
+        word = word.strip()
+        if word == "":
+            index +=1
+            continue
+        if index == 0:
+            if not re.match(r"[A-Z][a-zA-Z0-9]*", word):
+                return False
+        else:
+            if not re.match(r"[a-zA-Z0-9]+", word):
+                return False
+        index += 1
+    return True
+
+def checkBigSnakeSyntax(text):
+    arr = text.split(" ")
+    index = 0
+    for word in arr:
+        word = word.strip()
+        if word == "":
+            index +=1
+            continue
+        if index == 0:
+            if not re.match(r"[A-Z][A-Z0-9_]*", word):
+                return False
+        else:
+            if not re.match(r"[A-Z0-9_]+", word):
+                return False
+        index += 1
+    return True
+
 def checkIdentifySyntax(text):
     return re.match(r"[a-zA-Z_][a-zA-Z0-9_]*", text)
 
-def getDataDir(path):
-    dataDir = os.path.join(os.path.expanduser('~'), '.GOC')
-    if not os.path.isdir(dataDir):
+def getDataDir():
+    return config.dataDir
+
+def getUserDir():
+    return os.path.expanduser('~')
+
+def getUserDataDir(path):
+    dataDir = os.path.join(getUserDir(), '.GOC')
+    if not os.path.exists(dataDir):
         os.mkdir(dataDir)
     if path and len(path) > 0:
-        os.path.join(dataDir, path)
+        dataDir = os.path.join(dataDir, path)
     return dataDir
 
 
