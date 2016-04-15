@@ -4,6 +4,8 @@ import os
 import re
 import config
 
+from PyQt5 import QtCore
+
 def normal2Snake(text, prefix):
     arr = text.split(" ")
     ret = ""

@@ -1,7 +1,7 @@
 #!/bin/env python3
 # -*- coding: UTF-8 -*-
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 from utils import *
 import json
 
@@ -13,6 +13,9 @@ def getRealText(edt):
         return edt.text()
     else:
         return edt.placeholderText()
+
+def _tr(s):
+    QtCore.QCoreApplication.translate("MainWindow",s)
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self,parent=None):
@@ -30,12 +33,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 lambda name, value:
                     value.textEdited.connect(self.saveUIData)
             )
-        if len(self.edtOutDir.text()) <= 0:
+        if len(self.edtOutDir.text()) and len(self.edtOutDir.placeholderText()) <= 0:
              self.edtOutDir.setText(getUserDir())
 
         self.btnGenerate.clicked.connect(self.clickedGenerate)
 
-        
+
+        self.selectDialog = QtWidgets.QFileDialog(self)
+        self.selectDialog.setWindowTitle(_tr("选择输出目录"))
+        self.selectDialog.setDirectory(getRealText(self.edtOutDir))
+        # self.selectDialog.setFilter(_tr("目录"))
+        self.selectDialog.setFileMode(QtWidgets.QFileDialog.DirectoryOnly)
+        self.selectDialog.setOption(QtWidgets.QFileDialog.ShowDirsOnly, True)
+        self.selectDialog.accepted.connect(self.selectedDir)
+        self.btnSelOutDir.clicked.connect(self.selectDialog.exec)
+
 
     def readUIData(self):
         filepath = getUserDataDir("uidata.json")
@@ -49,6 +61,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         scanSelf(self, QtWidgets.QLineEdit, read_cb)
 
     def saveUIData(self):
+        print("saveUIData")
         data = {}
         def save_cb(name, value):
             data[name] = getRealText(value)
@@ -94,6 +107,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.edtOutFilename.setPlaceholderText(strCamel)
         if len(self.edtBigSnakeID.text()) == 0:
             self.edtBigSnakeID.setPlaceholderText(strBigSnake)
+
+    def selectedDir(self):
+        self.edtOutDir.setText(self.selectDialog.selectedFiles()[0])
+        self.saveUIData()
 
     def clickedGenerate(self):
         pass
