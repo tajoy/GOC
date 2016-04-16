@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>GObject对象生成器 by 谭戬</string>
+   <string>GObject对象生成器 by Tajoy</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="sizePolicy">
@@ -279,7 +279,7 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLineEdit" name="lineEdit">
+             <widget class="QLineEdit" name="edtParentName">
               <property name="placeholderText">
                <string>GObject</string>
               </property>
@@ -293,7 +293,7 @@
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QLineEdit" name="edtPrefixParent">
+             <widget class="QLineEdit" name="edtParentPrefix">
               <property name="placeholderText">
                <string>G</string>
               </property>
@@ -307,7 +307,7 @@
              </widget>
             </item>
             <item row="2" column="1">
-             <widget class="QLineEdit" name="lineEdit_2">
+             <widget class="QLineEdit" name="edtParentClassName">
               <property name="placeholderText">
                <string>GObjectClass</string>
               </property>
@@ -321,7 +321,7 @@
              </widget>
             </item>
             <item row="3" column="1">
-             <widget class="QLineEdit" name="lineEdit_3">
+             <widget class="QLineEdit" name="edtParentTypeMacro">
               <property name="placeholderText">
                <string>G_TYPE_OBJECT</string>
               </property>
@@ -331,20 +331,20 @@
           </widget>
          </item>
          <item>
-          <spacer name="verticalSpacer">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
+          <widget class="QGroupBox" name="groupBox_3">
+           <property name="title">
+            <string>实现的接口</string>
            </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Expanding</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>0</width>
-             <height>0</height>
-            </size>
-           </property>
-          </spacer>
+           <layout class="QVBoxLayout" name="verticalLayout_6">
+            <item>
+             <widget class="QTableView" name="lstImplInteface">
+              <property name="toolTip">
+               <string>请填写获取GType的表达式/函数/宏!</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </item>
         </layout>
        </item>
@@ -354,7 +354,7 @@
           <item>
            <widget class="QGroupBox" name="groupBox">
             <property name="title">
-             <string>属性列表</string>
+             <string>属性</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_4">
              <item>
@@ -370,7 +370,7 @@
           <item>
            <widget class="QGroupBox" name="groupBox_2">
             <property name="title">
-             <string>信号列表</string>
+             <string>信号</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_5">
              <item>
@@ -380,17 +380,13 @@
            </widget>
           </item>
           <item>
-           <widget class="QGroupBox" name="groupBox_3">
+           <widget class="QGroupBox" name="groupBox_8">
             <property name="title">
-             <string>实现的接口列表</string>
+             <string>自定义模版参数</string>
             </property>
-            <layout class="QVBoxLayout" name="verticalLayout_6">
+            <layout class="QVBoxLayout" name="verticalLayout_15">
              <item>
-              <widget class="QTableView" name="lstImplInteface">
-               <property name="toolTip">
-                <string>请填写获取GType的表达式/函数/宏!</string>
-               </property>
-              </widget>
+              <widget class="QTableView" name="lstCustomParameters"/>
              </item>
             </layout>
            </widget>
@@ -460,7 +456,7 @@
      <x>0</x>
      <y>0</y>
      <width>754</width>
-     <height>28</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
