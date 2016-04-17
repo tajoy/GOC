@@ -24,8 +24,11 @@ class Delegate(QtWidgets.QStyledItemDelegate):
 
     def setModelData(self, editor, model, index):
         #setModelData(self, QWidget, QAbstractItemModel, QModelIndex)
-        pass
+        spinBox = editor
+        spinBox.interpretText()
+        value = spinBox.value()
+        model.setData(index, value, Qt.ItemDataRole.EditRole)
 
     def updateEditorGeometry(self, editor, option, index):
         #updateEditorGeometry(self, QWidget, QStyleOptionViewItem, QModelIndex)
-        pass
+        editor.setGeometry(option.rect)
