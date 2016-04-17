@@ -22,9 +22,29 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         QtWidgets.QWidget.__init__(self,parent)
         self.setupUi(self)
         self.readUIData()
+        if len(self.edtOutDir.text()) and len(self.edtOutDir.placeholderText()) <= 0:
+             self.edtOutDir.setText(getUserDir())
+        self._init_widgets()
+        self._init_connects()
+
+    def _init_widgets(self):
+
+        self.selectDialog = QtWidgets.QFileDialog(self)
+        self.selectDialog.setWindowTitle(_tr("选择输出目录"))
+        self.selectDialog.setDirectory(getRealText(self.edtOutDir))
+        # self.selectDialog.setFilter(_tr("目录"))
+        self.selectDialog.setFileMode(QtWidgets.QFileDialog.DirectoryOnly)
+        self.selectDialog.setOption(QtWidgets.QFileDialog.ShowDirsOnly, True)
+
+        self.modelInterface = QtWidgets.QStandardItemModel(2, 2)
+        self.modelInterface
+        self.delegateInterface = DelegateInterface.Delegate()
+        self.lstImplInteface.setModel(self.modelInterface)
+        self.lstImplInteface.setItemDelegate(self.delegateInterface)
+
+    def _init_connects(self):
         self.edtReadName.textEdited.connect(self.whenNameOrPrefixChanged)
         self.edtPrefix.textEdited.connect(self.whenNameOrPrefixChanged)
-
         self.edtSnakeID.textEdited.connect(self.whenSnakeIDChanged)
         self.edtCamelID.textEdited.connect(self.whenCamelIDChanged)
         self.edtBigSnakeID.textEdited.connect(self.whenBigSnakeIDChanged)
@@ -33,21 +53,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 lambda name, value:
                     value.textEdited.connect(self.saveUIData)
             )
-        if len(self.edtOutDir.text()) and len(self.edtOutDir.placeholderText()) <= 0:
-             self.edtOutDir.setText(getUserDir())
 
         self.btnGenerate.clicked.connect(self.clickedGenerate)
 
-
-        self.selectDialog = QtWidgets.QFileDialog(self)
-        self.selectDialog.setWindowTitle(_tr("选择输出目录"))
-        self.selectDialog.setDirectory(getRealText(self.edtOutDir))
-        # self.selectDialog.setFilter(_tr("目录"))
-        self.selectDialog.setFileMode(QtWidgets.QFileDialog.DirectoryOnly)
-        self.selectDialog.setOption(QtWidgets.QFileDialog.ShowDirsOnly, True)
         self.selectDialog.accepted.connect(self.selectedDir)
         self.btnSelOutDir.clicked.connect(self.selectDialog.exec)
-
 
     def readUIData(self):
         filepath = getUserDataDir("uidata.json")
