@@ -1,11 +1,13 @@
 #!/bin/env python3
 # -*- coding: UTF-8 -*-
 
-from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtWidgets, QtGui, QtCore, Qt
 from utils import *
 import json
 
 from Ui_MainWindow import Ui_MainWindow
+
+import Interface, Property, Signal, CustomParameter
 
 
 def getRealText(edt):
@@ -15,7 +17,7 @@ def getRealText(edt):
         return edt.placeholderText()
 
 def _tr(s):
-    QtCore.QCoreApplication.translate("MainWindow",s)
+    return QtCore.QCoreApplication.translate("MainWindow",s)
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self,parent=None):
@@ -36,27 +38,68 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.selectDialog.setFileMode(QtWidgets.QFileDialog.DirectoryOnly)
         self.selectDialog.setOption(QtWidgets.QFileDialog.ShowDirsOnly, True)
 
-        self.modelInterface = QtWidgets.QStandardItemModel(2, 2)
-        self.modelInterface
-        self.delegateInterface = DelegateInterface.Delegate()
+        self.modelInterface = QtGui.QStandardItemModel(1, 1)
+        self.modelInterface.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant(_tr("GType函数/宏")))
+        self.modelInterface.itemChanged.connect(self._onInterfaceTableChanged)
+        self.delegateInterface = Interface.Delegate()
         self.lstImplInteface.setModel(self.modelInterface)
         self.lstImplInteface.setItemDelegate(self.delegateInterface)
 
+
+        self.modelProperty = QtGui.QStandardItemModel(1, 1)
+        self.modelProperty.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant(_tr("GType函数/宏")))
+        self.modelProperty.itemChanged.connect(self._onPropertyTableChanged)
+        self.delegateProperty = Property.Delegate()
+        self.lstProperties.setModel(self.modelProperty)
+        self.lstProperties.setItemDelegate(self.delegateProperty)
+
+
+        self.modelSignal = QtGui.QStandardItemModel(1, 1)
+        self.modelSignal.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant(_tr("GType函数/宏")))
+        self.modelSignal.itemChanged.connect(self._onSignalTableChanged)
+        self.delegateSignal = Signal.Delegate()
+        self.lstSignals.setModel(self.modelSignal)
+        self.lstSignals.setItemDelegate(self.delegateSignal)
+
+
+        self.modelCustomParameter = QtGui.QStandardItemModel(1, 1)
+        self.modelCustomParameter.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant(_tr("GType函数/宏")))
+        self.modelCustomParameter.itemChanged.connect(self._onCustomParameterTableChanged)
+        self.delegateCustomParameter = CustomParameter.Delegate()
+        self.lstCustomParameters.setModel(self.modelCustomParameter)
+        self.lstCustomParameters.setItemDelegate(self.delegateCustomParameter)
+
+    def _onInterfaceTableChanged(self, item):
+        if item.index().row() == self.modelInterface.rowCount() - 1:
+            self.modelInterface.appendRow(None)
+
+    def _onPropertyTableChanged(self, item):
+        if item.index().row() == self.modelProperty.rowCount() - 1:
+            self.modelProperty.appendRow(None)
+
+    def _onSignalTableChanged(self, item):
+        if item.index().row() == self.modelSignal.rowCount() - 1:
+            self.modelSignal.appendRow(None)
+
+    def _onCustomParameterTableChanged(self, item):
+        if item.index().row() == self.modelCustomParameter.rowCount() - 1:
+            self.modelCustomParameter.appendRow(None)
+
     def _init_connects(self):
-        self.edtReadName.textEdited.connect(self.whenNameOrPrefixChanged)
-        self.edtPrefix.textEdited.connect(self.whenNameOrPrefixChanged)
-        self.edtSnakeID.textEdited.connect(self.whenSnakeIDChanged)
-        self.edtCamelID.textEdited.connect(self.whenCamelIDChanged)
-        self.edtBigSnakeID.textEdited.connect(self.whenBigSnakeIDChanged)
+        self.edtReadName.textEdited.connect(self._onNameOrPrefixChanged)
+        self.edtPrefix.textEdited.connect(self._onNameOrPrefixChanged)
+        self.edtSnakeID.textEdited.connect(self._onSnakeIDChanged)
+        self.edtCamelID.textEdited.connect(self._onCamelIDChanged)
+        self.edtBigSnakeID.textEdited.connect(self._onBigSnakeIDChanged)
 
         scanSelf(self, QtWidgets.QLineEdit,
                 lambda name, value:
                     value.textEdited.connect(self.saveUIData)
             )
 
-        self.btnGenerate.clicked.connect(self.clickedGenerate)
+        self.btnGenerate.clicked.connect(self.onClickedGenerate)
 
-        self.selectDialog.accepted.connect(self.selectedDir)
+        self.selectDialog.accepted.connect(self._onClickedSelectDir)
         self.btnSelOutDir.clicked.connect(self.selectDialog.exec)
 
     def readUIData(self):
@@ -81,22 +124,22 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         f.write(data_str)
         f.close()
 
-    def whenSnakeIDChanged(self, text):
+    def _onSnakeIDChanged(self, text):
         if not checkSnakeSyntax(self.edtSnakeID.text()):
             self.edtSnakeID.undo()
             return
 
-    def whenCamelIDChanged(self, text):
+    def _onCamelIDChanged(self, text):
         if not checkCamelSyntax(self.edtCamelID.text()):
             self.edtCamelID.undo()
             return
 
-    def whenBigSnakeIDChanged(self, text):
+    def _onBigSnakeIDChanged(self, text):
         if not checkBigSnakeSyntax(self.edtBigSnakeID.text()):
             self.edtBigSnakeID.undo()
             return
 
-    def whenNameOrPrefixChanged(self, text):
+    def _onNameOrPrefixChanged(self, text):
         name = getRealText(self.edtReadName)
         prefix = getRealText(self.edtPrefix)
         if not checkNormalSyntax(name):
@@ -118,9 +161,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if len(self.edtBigSnakeID.text()) == 0:
             self.edtBigSnakeID.setPlaceholderText(strBigSnake)
 
-    def selectedDir(self):
+    def _onClickedSelectDir(self):
         self.edtOutDir.setText(self.selectDialog.selectedFiles()[0])
         self.saveUIData()
 
-    def clickedGenerate(self):
+    def onClickedGenerate(self):
         pass
