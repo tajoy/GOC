@@ -46,24 +46,27 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.lstImplInteface.setItemDelegate(self.delegateInterface)
 
 
-        self.modelProperty = QtGui.QStandardItemModel(1, 1)
-        self.modelProperty.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant(_tr("GType函数/宏")))
+        self.modelProperty = QtGui.QStandardItemModel(1, 2)
+        self.modelProperty.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant(_tr("名称")))
+        self.modelProperty.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant(_tr("类型")))
         self.modelProperty.itemChanged.connect(self._onPropertyTableChanged)
         self.delegateProperty = Property.Delegate()
         self.lstProperties.setModel(self.modelProperty)
         self.lstProperties.setItemDelegate(self.delegateProperty)
 
 
-        self.modelSignal = QtGui.QStandardItemModel(1, 1)
-        self.modelSignal.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant(_tr("GType函数/宏")))
+        self.modelSignal = QtGui.QStandardItemModel(1, 2)
+        self.modelSignal.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant(_tr("名称")))
+        self.modelSignal.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant(_tr("回调类型")))
         self.modelSignal.itemChanged.connect(self._onSignalTableChanged)
         self.delegateSignal = Signal.Delegate()
         self.lstSignals.setModel(self.modelSignal)
         self.lstSignals.setItemDelegate(self.delegateSignal)
 
 
-        self.modelCustomParameter = QtGui.QStandardItemModel(1, 1)
-        self.modelCustomParameter.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant(_tr("GType函数/宏")))
+        self.modelCustomParameter = QtGui.QStandardItemModel(1, 2)
+        self.modelCustomParameter.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant(_tr("名称")))
+        self.modelCustomParameter.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant(_tr("值")))
         self.modelCustomParameter.itemChanged.connect(self._onCustomParameterTableChanged)
         self.delegateCustomParameter = CustomParameter.Delegate()
         self.lstCustomParameters.setModel(self.modelCustomParameter)
