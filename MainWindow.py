@@ -2,16 +2,16 @@
 # -*- coding: UTF-8 -*-
 
 from PyQt5 import QtWidgets, QtGui, QtCore, Qt
-from utils import *
 import json
 
+from utils import *
 from Ui_MainWindow import Ui_MainWindow
-
 import Interface, Property, Signal, CustomParameter
+import Generator
 
 
 def getRealText(edt):
-    if len(edt.text()) > 0:
+    if edt and len(edt.text()) > 0:
         return edt.text()
     else:
         return edt.placeholderText()
@@ -113,7 +113,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         data = json.loads(f.read())
         f.close()
         def read_cb(name, value):
-            value.setPlaceholderText(data[name])
+            if name in data:
+                value.setPlaceholderText(data[name])
         scanSelf(self, QtWidgets.QLineEdit, read_cb)
 
     def saveUIData(self):
@@ -169,4 +170,4 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.saveUIData()
 
     def onClickedGenerate(self):
-        pass
+        gen = Generator()

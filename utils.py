@@ -114,12 +114,22 @@ def getDataDir():
 def getUserDir():
     return os.path.expanduser('~')
 
+
+def getUserModelDir():
+    return getUserDataDir('templates')
+
+
+def getDefaultModelDir():
+    return config.defaultModelDir
+
 def getUserDataDir(path):
     dataDir = os.path.join(getUserDir(), '.GOC')
     if not os.path.exists(dataDir):
         os.mkdir(dataDir)
     if path and len(path) > 0:
         dataDir = os.path.join(dataDir, path)
+    if not os.path.exists(dataDir):
+        os.mkdir(dataDir)
     return dataDir
 
 
