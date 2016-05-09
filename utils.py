@@ -114,13 +114,21 @@ def getDataDir():
 def getUserDir():
     return os.path.expanduser('~')
 
+def getVersion():
+    return config.version
 
-def getUserModelDir():
-    return getUserDataDir('templates')
+def getUserTemplateDir():
+    path = getUserDataDir('templates')
+    if not os.path.exists(path):
+        os.mkdir(path)
+    return path
 
 
-def getDefaultModelDir():
-    return config.defaultModelDir
+def getDefaultTemplateDir():
+    path = os.path.join(getDataDir, 'default')
+    if not os.path.exists(path):
+        os.mkdir(path)
+    return path
 
 def getUserDataDir(path):
     dataDir = os.path.join(getUserDir(), '.GOC')
@@ -128,10 +136,7 @@ def getUserDataDir(path):
         os.mkdir(dataDir)
     if path and len(path) > 0:
         dataDir = os.path.join(dataDir, path)
-    if not os.path.exists(dataDir):
-        os.mkdir(dataDir)
     return dataDir
-
 
 def scanSelf(self, klass, func):
     for name,value in vars(self).items():

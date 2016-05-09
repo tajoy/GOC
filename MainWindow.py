@@ -30,7 +30,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self._init_connects()
 
     def _init_widgets(self):
-
+        ################## 选择目录对话框 #################
         self.selectDialog = QtWidgets.QFileDialog(self)
         self.selectDialog.setWindowTitle(_tr("选择输出目录"))
         self.selectDialog.setDirectory(getRealText(self.edtOutDir))
@@ -38,6 +38,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.selectDialog.setFileMode(QtWidgets.QFileDialog.DirectoryOnly)
         self.selectDialog.setOption(QtWidgets.QFileDialog.ShowDirsOnly, True)
 
+        ################# 模板列表 #################
+        self.cbxTemplate.setEditable(False)
+        self.loadTemplateDirs()
+
+        ################# 实现的接口表 #################
         self.modelInterface = QtGui.QStandardItemModel(1, 1)
         self.modelInterface.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant(_tr("GType函数/宏")))
         self.modelInterface.itemChanged.connect(self._onInterfaceTableChanged)
@@ -45,16 +50,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.lstImplInteface.setModel(self.modelInterface)
         self.lstImplInteface.setItemDelegate(self.delegateInterface)
 
-
+        ################# 属性表 #################
         self.modelProperty = QtGui.QStandardItemModel(1, 2)
         self.modelProperty.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant(_tr("名称")))
         self.modelProperty.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant(_tr("类型")))
+        self.modelProperty.setHeaderData(2, QtCore.Qt.Horizontal, QtCore.QVariant(_tr("默认值")))
+        self.modelProperty.setHeaderData(3, QtCore.Qt.Horizontal, QtCore.QVariant(_tr("最大值")))
+        self.modelProperty.setHeaderData(4, QtCore.Qt.Horizontal, QtCore.QVariant(_tr("最小值")))
         self.modelProperty.itemChanged.connect(self._onPropertyTableChanged)
         self.delegateProperty = Property.Delegate()
         self.lstProperties.setModel(self.modelProperty)
         self.lstProperties.setItemDelegate(self.delegateProperty)
 
-
+        ################# 信号表 #################
         self.modelSignal = QtGui.QStandardItemModel(1, 2)
         self.modelSignal.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant(_tr("名称")))
         self.modelSignal.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant(_tr("回调类型")))
@@ -63,7 +71,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.lstSignals.setModel(self.modelSignal)
         self.lstSignals.setItemDelegate(self.delegateSignal)
 
-
+        ################# 自定义参数表 #################
         self.modelCustomParameter = QtGui.QStandardItemModel(1, 2)
         self.modelCustomParameter.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant(_tr("名称")))
         self.modelCustomParameter.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant(_tr("值")))
@@ -72,23 +80,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.lstCustomParameters.setModel(self.modelCustomParameter)
         self.lstCustomParameters.setItemDelegate(self.delegateCustomParameter)
 
-    def _onInterfaceTableChanged(self, item):
-        if item.index().row() == self.modelInterface.rowCount() - 1:
-            self.modelInterface.appendRow(None)
-
-    def _onPropertyTableChanged(self, item):
-        if item.index().row() == self.modelProperty.rowCount() - 1:
-            self.modelProperty.appendRow(None)
-
-    def _onSignalTableChanged(self, item):
-        if item.index().row() == self.modelSignal.rowCount() - 1:
-            self.modelSignal.appendRow(None)
-
-    def _onCustomParameterTableChanged(self, item):
-        if item.index().row() == self.modelCustomParameter.rowCount() - 1:
-            self.modelCustomParameter.appendRow(None)
-
     def _init_connects(self):
+        self.cbxTemplate.currentIndexChanged.connect(self._onTemplateComboBoxSelected)
         self.edtReadName.textEdited.connect(self._onNameOrPrefixChanged)
         self.edtPrefix.textEdited.connect(self._onNameOrPrefixChanged)
         self.edtSnakeID.textEdited.connect(self._onSnakeIDChanged)
@@ -104,6 +97,26 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.selectDialog.accepted.connect(self._onClickedSelectDir)
         self.btnSelOutDir.clicked.connect(self.selectDialog.exec)
+
+    def loadTemplateDirs(self):
+        self.cbxTemplate.clear()
+        self.allTemplateDirs = []
+        self.cbxTemplate.additem(_tr('默认模板'))
+        for root, dirs, files in os.walk(getUserTemplateDir()):
+            for d in dirs:
+                # 只遍历一级目录
+                if len(os.path.split(d)) == 1             \
+                    or (                                  \
+                        len(os.path.split(d)) == 2        \
+                        and (                             \
+                            os.path.split(d)[0] == ''     \
+                            or os.path.split(d)[1] == '') \
+                        ):
+                    path = os.path.join(root, d)
+                    self.allTemplateDirs += path
+        self.cbxTemplate.additem(self.allTemplateDirs)
+        self.cbxTemplate.setCurrentIndex(0)
+        self.selectedTemplateDir = getUserTemplateDir()
 
     def readUIData(self):
         filepath = getUserDataDir("uidata.json")
@@ -127,6 +140,29 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         f = open(getUserDataDir("uidata.json"), 'w')
         f.write(data_str)
         f.close()
+
+    def _onTemplateComboBoxSelected(self, index):
+        if index == 0 or index = -1:
+            self.selectedTemplateDir = getUserTemplateDir()
+        else:
+            if index > 0 and index < len(self.allTemplateDirs):
+                self.selectedTemplateDir = self.allTemplateDirs[index]
+
+    def _onInterfaceTableChanged(self, item):
+        if item.index().row() == self.modelInterface.rowCount() - 1:
+            self.modelInterface.appendRow(None)
+
+    def _onPropertyTableChanged(self, item):
+        if item.index().row() == self.modelProperty.rowCount() - 1:
+            self.modelProperty.appendRow(None)
+
+    def _onSignalTableChanged(self, item):
+        if item.index().row() == self.modelSignal.rowCount() - 1:
+            self.modelSignal.appendRow(None)
+
+    def _onCustomParameterTableChanged(self, item):
+        if item.index().row() == self.modelCustomParameter.rowCount() - 1:
+            self.modelCustomParameter.appendRow(None)
 
     def _onSnakeIDChanged(self, text):
         if not checkSnakeSyntax(self.edtSnakeID.text()):
@@ -169,5 +205,89 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.edtOutDir.setText(self.selectDialog.selectedFiles()[0])
         self.saveUIData()
 
+
+    def getInterfaceData(self):
+        data = []
+        cout = self.modelInterface.rowCount()
+        for i in xrange(0, cout):
+            data += {
+                "type_macro": self.modelInterface.item(i, 0).text(),
+            }
+        return data
+
+    def getPropertyData(self):
+        data = []
+        cout = self.modelProperty.rowCount()
+        for i in xrange(0, cout):
+            data += {
+                "name"   : self.modelProperty.item(i, 0).text(),
+                "type"   : self.modelProperty.item(i, 1).text(),
+                "default": self.modelProperty.item(i, 2).text(),
+                "max"    : self.modelProperty.item(i, 3).text(),
+                "min"    : self.modelProperty.item(i, 4).text(),
+            }
+        return data
+
+    def getSignalData(self):
+        data = []
+        cout = self.modelSignal.rowCount()
+        for i in xrange(0, cout):
+            data += {
+                "name": self.modelSignal.item(i, 0).text(),
+                "type": self.modelSignal.item(i, 1).text(),
+            }
+        return data
+
+    def getCustomParameterData(self):
+        data = []
+        cout = self.modelCustomParameter.rowCount()
+        for i in xrange(0, cout):
+            data[self.modelCustomParameter.item(i, 0).text()] = self.modelCustomParameter.item(i, 1).text()
+        return data
+
     def onClickedGenerate(self):
-        gen = Generator()
+        data = {
+            # 元数据
+            "version"      : getVersion(),
+            "template_dir" : self.selectedTemplateDir,
+
+            #名称信息
+            "read_name"    : getRealText(self.edtReadName),
+            "prefix"       : getRealText(self.edtPrefix),
+            "snake_id"     : getRealText(self.edtSnakeID),
+            "camel_id"     : getRealText(self.edtCamelID),
+            "big_snake_id" : getRealText(self.edtBigSnakeID),
+
+            #继承信息
+            "parent_name"       : getRealText(self.edtParentName),
+            "parent_prefix"     : getRealText(self.edtParentPrefix),
+            "parent_class_name" : getRealText(self.edtParentClassName),
+            "parent_type_macro" : getRealText(self.edtParentTypeMacro),
+
+            #实现信息
+            "impl_interface" : self.getInterfaceData(),
+            "impl_property"  : self.getPropertyData(),
+            "impl_signal"    : self.getSignalData(),
+
+            #自定义参数
+            "custom" : self.getCustomParameterData(),
+        }
+        gen = Generator(self.selectedTemplateDir, data)
+        outDir = getRealText(self.edtOutDir)
+        outName = getRealText(self.edtOutFilename)
+        f = None
+        try:
+            if self.rbtnNormalClass.isChecked():
+                f = open(getUserDataDir("uidata.json"), 'w')
+                pass
+            elif  self.rbtnAbstractClass.isChecked():
+                pass
+            elif  self.rbtnInterface.isChecked():
+                pass
+        except Exception, e:
+            msgBox = QtGui.QMessageBox(QtCore.Qt.Critical,_tr(""), _tr(""))
+
+        finally:
+            pass
+
+

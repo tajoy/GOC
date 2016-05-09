@@ -7,7 +7,7 @@ import sys
 
 
 installPrefix = '/usr/local'
-
+version = '0.1.0'
      
 if platform.system() == 'Linux':
     dataDir = os.path.join(installPrefix, '/share', 'GOC')
@@ -20,9 +20,3 @@ elif platform.system() == 'Windows':
 elif platform.system() == 'MacOS':
     dataDir = os.path.join(installPrefix, '/share', 'GOC')
 
-
-version = '0.1.0'
-
-
-# 测试所需, 以后该为安装路径
-defaultModelDir = os.path.join(dataDir, 'default')
