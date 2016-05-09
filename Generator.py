@@ -18,7 +18,7 @@ class Generator(object):
         return self.data[name]
 
     def generate(self, template_file):
-        return engine.render(template_file,
+        return self.engine.render(template_file,
                              self.data,
                              postfix='.tmpl'
                             )

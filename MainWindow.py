@@ -7,7 +7,7 @@ import json
 from utils import *
 from Ui_MainWindow import Ui_MainWindow
 import Interface, Property, Signal, CustomParameter
-import Generator
+from Generator import Generator
 
 
 def getRealText(edt):
@@ -51,7 +51,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.lstImplInteface.setItemDelegate(self.delegateInterface)
 
         ################# 属性表 #################
-        self.modelProperty = QtGui.QStandardItemModel(1, 2)
+        self.modelProperty = QtGui.QStandardItemModel(1, 5)
         self.modelProperty.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant(_tr("名称")))
         self.modelProperty.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant(_tr("类型")))
         self.modelProperty.setHeaderData(2, QtCore.Qt.Horizontal, QtCore.QVariant(_tr("默认值")))
@@ -101,7 +101,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def loadTemplateDirs(self):
         self.cbxTemplate.clear()
         self.allTemplateDirs = []
-        self.cbxTemplate.additem(_tr('默认模板'))
+        self.cbxTemplate.addItem(_tr('默认模板'))
         for root, dirs, files in os.walk(getUserTemplateDir()):
             for d in dirs:
                 # 只遍历一级目录
@@ -114,7 +114,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         ):
                     path = os.path.join(root, d)
                     self.allTemplateDirs += path
-        self.cbxTemplate.additem(self.allTemplateDirs)
+        self.cbxTemplate.addItems(self.allTemplateDirs)
         self.cbxTemplate.setCurrentIndex(0)
         self.selectedTemplateDir = getUserTemplateDir()
 
@@ -142,26 +142,30 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         f.close()
 
     def _onTemplateComboBoxSelected(self, index):
-        if index == 0 or index = -1:
+        if index == 0 or index == -1:
             self.selectedTemplateDir = getUserTemplateDir()
         else:
             if index > 0 and index < len(self.allTemplateDirs):
                 self.selectedTemplateDir = self.allTemplateDirs[index]
 
     def _onInterfaceTableChanged(self, item):
-        if item.index().row() == self.modelInterface.rowCount() - 1:
+        if item.index().row() == self.modelInterface.rowCount() - 1 \
+            and len(item.text()) > 0:
             self.modelInterface.appendRow(None)
 
     def _onPropertyTableChanged(self, item):
-        if item.index().row() == self.modelProperty.rowCount() - 1:
+        if item.index().row() == self.modelProperty.rowCount() - 1\
+            and len(item.text()) > 0:
             self.modelProperty.appendRow(None)
 
     def _onSignalTableChanged(self, item):
-        if item.index().row() == self.modelSignal.rowCount() - 1:
+        if item.index().row() == self.modelSignal.rowCount() - 1\
+            and len(item.text()) > 0:
             self.modelSignal.appendRow(None)
 
     def _onCustomParameterTableChanged(self, item):
-        if item.index().row() == self.modelCustomParameter.rowCount() - 1:
+        if item.index().row() == self.modelCustomParameter.rowCount() - 1\
+            and len(item.text()) > 0:
             self.modelCustomParameter.appendRow(None)
 
     def _onSnakeIDChanged(self, text):
@@ -209,43 +213,51 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def getInterfaceData(self):
         data = []
         cout = self.modelInterface.rowCount()
-        for i in xrange(0, cout):
-            data += {
-                "type_macro": self.modelInterface.item(i, 0).text(),
-            }
+        for i in range(0, cout):
+            if self.modelInterface.item(i, 0):
+                data += {
+                    "type_macro": self.modelInterface.item(i, 0).text(),
+                }
         return data
 
     def getPropertyData(self):
         data = []
         cout = self.modelProperty.rowCount()
-        for i in xrange(0, cout):
-            data += {
-                "name"   : self.modelProperty.item(i, 0).text(),
-                "type"   : self.modelProperty.item(i, 1).text(),
-                "default": self.modelProperty.item(i, 2).text(),
-                "max"    : self.modelProperty.item(i, 3).text(),
-                "min"    : self.modelProperty.item(i, 4).text(),
-            }
+        for i in range(0, cout):
+            if self.modelProperty.item(i, 0):
+                data += {
+                    "name"   : self.modelProperty.item(i, 0).text(),
+                    "type"   : self.modelProperty.item(i, 1).text(),
+                    "default": self.modelProperty.item(i, 2).text(),
+                    "max"    : self.modelProperty.item(i, 3).text(),
+                    "min"    : self.modelProperty.item(i, 4).text(),
+                }
         return data
 
     def getSignalData(self):
         data = []
         cout = self.modelSignal.rowCount()
-        for i in xrange(0, cout):
-            data += {
-                "name": self.modelSignal.item(i, 0).text(),
-                "type": self.modelSignal.item(i, 1).text(),
-            }
+        for i in range(0, cout):
+            if self.modelSignal.item(i, 0):
+                data += {
+                    "name": self.modelSignal.item(i, 0).text(),
+                    "type": self.modelSignal.item(i, 1).text(),
+                }
         return data
 
     def getCustomParameterData(self):
         data = []
         cout = self.modelCustomParameter.rowCount()
-        for i in xrange(0, cout):
-            data[self.modelCustomParameter.item(i, 0).text()] = self.modelCustomParameter.item(i, 1).text()
+        for i in range(0, cout):
+            if self.modelCustomParameter.item(i, 0):
+                data[self.modelCustomParameter.item(i, 0).text()] = self.modelCustomParameter.item(i, 1).text()
         return data
 
     def onClickedGenerate(self):
+
+        # if not self.checkParms():
+        #     return
+
         data = {
             # 元数据
             "version"      : getVersion(),
@@ -276,18 +288,31 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         outDir = getRealText(self.edtOutDir)
         outName = getRealText(self.edtOutFilename)
         f = None
-        try:
-            if self.rbtnNormalClass.isChecked():
-                f = open(getUserDataDir("uidata.json"), 'w')
-                pass
-            elif  self.rbtnAbstractClass.isChecked():
-                pass
-            elif  self.rbtnInterface.isChecked():
-                pass
-        except Exception, e:
-            msgBox = QtGui.QMessageBox(QtCore.Qt.Critical,_tr(""), _tr(""))
+        path = ""
+        baseName = ""
+        if self.rbtnNormalClass.isChecked():
+            baseName = "class"
+        elif  self.rbtnAbstractClass.isChecked():
+            baseName = "abstract"
+        elif  self.rbtnAbstractClass.isChecked():
+            baseName = "interface"
 
+
+        try:
+            path = os.path.join(outDir, outName + ".c")
+            f = open(getUserDataDir(path), 'w')
+            f.write(gen.generate(os.path.join(self.selectedTemplateDir, baseName + ".c.tmpl")))
+            f.close()
+            path = os.path.join(outDir, outName + ".h")
+            f = open(getUserDataDir(path), 'w')
+            f.write(gen.generate(os.path.join(self.selectedTemplateDir, baseName + ".h.tmpl")))
+            f.close()
+        except Exception as e:
+            # QMessageBox::Critical 3 an icon indicating that the message represents a critical problem.
+            self.msgBox = QtWidgets.QMessageBox(3, _tr("错误!"), _tr("生成文件时发生错误!\n文件: %s\n错误: %s\n") % (path, str(e)))
+            self.msgBox.show()
         finally:
-            pass
+            if f:
+                f.close()
 
 
