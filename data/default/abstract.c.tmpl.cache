@@ -1,16 +1,19 @@
-<?py include('./header.c.tmpl') ?>
+timestamp: 1462872569.9821393
+encoding: utf-8
 
+_extend=_buf.extend;_to_str=to_str;_escape=escape; include('./header.c.tmpl')
+_extend(('''
 
 /************ includes ************/
-#include "${file_base}.h"
+#include "''', _escape(_to_str(file_base)), '''.h"
 
 
 /************ defines ************/
-G_DEFINE_ABSTRACT_TYPE(${camel_id}, ${snake_id}, ${parent_type_macro})
-#define GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), TYPE_${big_snake_id}, ${camel_id}Private))
+G_DEFINE_ABSTRACT_TYPE(''', _escape(_to_str(camel_id)), ''', ''', _escape(_to_str(snake_id)), ''', ''', _escape(_to_str(parent_type_macro)), ''')
+#define GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), TYPE_''', _escape(_to_str(big_snake_id)), ''', ''', _escape(_to_str(camel_id)), '''Private))
 
 /************ types ************/
-struct _${camel_id}Private
+struct _''', _escape(_to_str(camel_id)), '''Private
 {
     gint prop_one;
     gint prop_two;
@@ -39,10 +42,10 @@ static void get_property_od(GObject*object, guint property_id, GValue *value, GP
 static void set_property_od(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
 
 /************ function implements ************/
-static void ${snake_id}_class_init(${camel_id}Class *klass)
+static void ''', _escape(_to_str(snake_id)), '''_class_init(''', _escape(_to_str(camel_id)), '''Class *klass)
 {
     GObjectClass *g_object_class = G_OBJECT_CLASS(klass);
-    g_type_class_add_private(g_object_class, sizeof(${camel_id}Private));
+    g_type_class_add_private(g_object_class, sizeof(''', _escape(_to_str(camel_id)), '''Private));
     g_object_class->dispose = dispose_od;
     g_object_class->finalize = finalize_od;
     g_object_class->get_property = get_property_od;
@@ -73,32 +76,32 @@ static void ${snake_id}_class_init(${camel_id}Class *klass)
         obj_properties);
 }
 
-static void ${snake_id}_init(${camel_id} *self)
+static void ''', _escape(_to_str(snake_id)), '''_init(''', _escape(_to_str(camel_id)), ''' *self)
 {
-    ${camel_id}Private *priv = GET_PRIVATE(self);
+    ''', _escape(_to_str(camel_id)), '''Private *priv = GET_PRIVATE(self);
 }
 
 static void dispose_od(GObject *object)
 {
-    ${camel_id} *self = (${camel_id}*)object;
-    ${camel_id}Private *priv = GET_PRIVATE(self);
+    ''', _escape(_to_str(camel_id)), ''' *self = (''', _escape(_to_str(camel_id)), '''*)object;
+    ''', _escape(_to_str(camel_id)), '''Private *priv = GET_PRIVATE(self);
     // 释放创建的对象
-    G_OBJECT_CLASS(${snake_id}_parent_class)->dispose(object);
+    G_OBJECT_CLASS(''', _escape(_to_str(snake_id)), '''_parent_class)->dispose(object);
 }
 
 static void finalize_od(GObject *object)
 {
-    ${camel_id} *self = (${camel_id}*)object;
-    ${camel_id}Private *priv = GET_PRIVATE(self);
+    ''', _escape(_to_str(camel_id)), ''' *self = (''', _escape(_to_str(camel_id)), '''*)object;
+    ''', _escape(_to_str(camel_id)), '''Private *priv = GET_PRIVATE(self);
     // 释放创建的内存
-    G_OBJECT_CLASS(${snake_id}_parent_class)->finalize(object);
+    G_OBJECT_CLASS(''', _escape(_to_str(snake_id)), '''_parent_class)->finalize(object);
 }
 
 
 static void get_property_od(GObject*object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-    ${camel_id} *self = ${big_snake_id} (object);
-    ${camel_id}Private *priv = GET_PRIVATE(self);
+    ''', _escape(_to_str(camel_id)), ''' *self = ''', _escape(_to_str(big_snake_id)), ''' (object);
+    ''', _escape(_to_str(camel_id)), '''Private *priv = GET_PRIVATE(self);
 
     switch (property_id)
     {
@@ -111,7 +114,7 @@ static void get_property_od(GObject*object, guint property_id, GValue *value, GP
         break;
 
     default:
-        /* We don't have any other property... */
+        /* We don\'t have any other property... */
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
         break;
     }
@@ -119,8 +122,8 @@ static void get_property_od(GObject*object, guint property_id, GValue *value, GP
 
 static void set_property_od(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-    ${camel_id} *self = ${big_snake_id} (object);
-    ${camel_id}Private *priv = GET_PRIVATE(self);
+    ''', _escape(_to_str(camel_id)), ''' *self = ''', _escape(_to_str(big_snake_id)), ''' (object);
+    ''', _escape(_to_str(camel_id)), '''Private *priv = GET_PRIVATE(self);
 
     switch (property_id)
     {
@@ -133,8 +136,8 @@ static void set_property_od(GObject *object, guint property_id, const GValue *va
         break;
 
     default:
-        /* We don't have any other property... */
+        /* We don\'t have any other property... */
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
         break;
     }
-}
+}\n''', ));

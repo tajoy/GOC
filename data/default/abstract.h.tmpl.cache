@@ -1,0 +1,43 @@
+timestamp: 1462872515.2501385
+encoding: utf-8
+
+_extend=_buf.extend;_to_str=to_str;_escape=escape; include('./header.h.tmpl')
+_extend(('''
+#ifndef ''', _escape(_to_str(include_guard_symbol)), '''
+#define ''', _escape(_to_str(include_guard_symbol)), '''
+
+/************ includes ************/
+#include <glib-object.h>
+
+/************ defines ************/
+G_BEGIN_DECLS
+
+#define TYPE_''', _escape(_to_str(big_snake_id)), '''             (''', _escape(_to_str(snake_id)), '''_get_type())
+#define ''', _escape(_to_str(big_snake_id)), '''(obj)             (G_TYPE_CHECK_INSTANCE_CAST((obj),TYPE_''', _escape(_to_str(big_snake_id)), ''', ''', _escape(_to_str(camel_id)), '''))
+#define ''', _escape(_to_str(big_snake_id)), '''_CLASS(klass)     (G_TYPE_CHECK_CLASS_CAST((klass), TYPE_''', _escape(_to_str(big_snake_id)), ''', ''', _escape(_to_str(camel_id)), '''Class))
+#define IS_''', _escape(_to_str(big_snake_id)), '''(obj)          (G_TYPE_CHECK_INSTANCE_TYPE((obj),TYPE_''', _escape(_to_str(big_snake_id)), '''))
+#define IS_''', _escape(_to_str(big_snake_id)), '''_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE((klass), TYPE_''', _escape(_to_str(big_snake_id)), '''))
+#define ''', _escape(_to_str(big_snake_id)), '''_GET_CLASS(o)     (G_TYPE_INSTANCE_GET_CLASS ((o), TYPE_''', _escape(_to_str(big_snake_id)), ''', ''', _escape(_to_str(camel_id)), '''Class))
+
+/************ types ************/
+typedef struct _''', _escape(_to_str(camel_id)), '''            ''', _escape(_to_str(camel_id)), ''';
+typedef struct _''', _escape(_to_str(camel_id)), '''Class       ''', _escape(_to_str(camel_id)), '''Class;
+typedef struct _''', _escape(_to_str(camel_id)), '''Private     ''', _escape(_to_str(camel_id)), '''Private;
+
+struct _''', _escape(_to_str(camel_id)), '''
+{
+    ''', _escape(_to_str(parent_name)), ''' parent;
+};
+struct _''', _escape(_to_str(camel_id)), '''Class
+{
+    ''', _escape(_to_str(parent_class_name)), ''' parent_class;
+};
+
+/************ globals ************/
+
+
+/************ function declarations ************/
+GType ''', _escape(_to_str(snake_id)), '''_get_type();
+
+G_END_DECLS
+#endif /* ''', _escape(_to_str(include_guard_symbol)), ''' */''', ));
