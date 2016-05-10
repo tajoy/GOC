@@ -8,6 +8,7 @@ import sys
 
 installPrefix = '/usr/local'
 version = '0.1.0'
+debug = True
      
 if platform.system() == 'Linux':
     dataDir = os.path.join(installPrefix, '/share', 'GOC')

@@ -98,6 +98,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.selectDialog.accepted.connect(self._onClickedSelectDir)
         self.btnSelOutDir.clicked.connect(self.selectDialog.exec)
 
+        ########### 菜单 ###########
+        self.act_open_default_tmpl_dir.triggered.connect(self._onActionOpenDefaultTemplateDir)
+        self.act_open_user_tmpl_dir.triggered.connect(self._onActionOpenUserTemplateDir)
+
     def loadTemplateDirs(self):
         self.cbxTemplate.clear()
         self.allTemplateDirs = []
@@ -113,10 +117,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             or os.path.split(d)[1] == '') \
                         ):
                     path = os.path.join(root, d)
-                    self.allTemplateDirs += path
-        self.cbxTemplate.addItems(self.allTemplateDirs)
+                    self.allTemplateDirs.append(path)
+        userTemplateDirs = []
+        for path in self.allTemplateDirs:
+            userTemplateDirs.append(                      \
+                    path.replace(getUserTemplateDir(),"") \
+                        .replace("/","")                  \
+                        .replace("\\","")                 \
+                )
+        self.cbxTemplate.addItems(userTemplateDirs)
         self.cbxTemplate.setCurrentIndex(0)
-        self.selectedTemplateDir = getUserTemplateDir()
+        self.selectedTemplateDir = getDefaultTemplateDir()
 
     def readUIData(self):
         filepath = getUserDataDir("uidata.json")
@@ -143,7 +154,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def _onTemplateComboBoxSelected(self, index):
         if index == 0 or index == -1:
-            self.selectedTemplateDir = getUserTemplateDir()
+            self.selectedTemplateDir = getDefaultTemplateDir()
         else:
             if index > 0 and index < len(self.allTemplateDirs):
                 self.selectedTemplateDir = self.allTemplateDirs[index]
@@ -201,7 +212,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.edtSnakeID.setPlaceholderText(strSnake)
         if len(self.edtCamelID.text()) == 0:
             self.edtCamelID.setPlaceholderText(strCamel)
-            self.edtOutFilename.setPlaceholderText(strCamel)
+            self.edtOutFilename.setPlaceholderText(strCamel.lower())
         if len(self.edtBigSnakeID.text()) == 0:
             self.edtBigSnakeID.setPlaceholderText(strBigSnake)
 
@@ -209,6 +220,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.edtOutDir.setText(self.selectDialog.selectedFiles()[0])
         self.saveUIData()
 
+
+    def _onActionOpenDefaultTemplateDir(self):
+        dirPath = getDefaultTemplateDir()
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl(dirPath))
+        print("called _onActionOpenDefaultTemplateDir")
+
+    def _onActionOpenUserTemplateDir(self):
+        dirPath = getUserTemplateDir()
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl(dirPath))
+        print("called _onActionOpenUserTemplateDir")
 
     def getInterfaceData(self):
         data = []
@@ -253,22 +274,68 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 data[self.modelCustomParameter.item(i, 0).text()] = self.modelCustomParameter.item(i, 1).text()
         return data
 
+    def errorMsg(self, title, text):
+        # QMessageBox::Critical 3 an icon indicating that the message represents a critical problem.
+        self.msgBox = QtWidgets.QMessageBox(3, title, text)
+        self.msgBox.show()
+
+    def getTemplateBaseName(self):
+        if self.rbtnNormalClass.isChecked():
+            return "class"
+        elif  self.rbtnAbstractClass.isChecked():
+            return "abstract"
+        elif  self.rbtnInterface.isChecked():
+            return "interface"
+
+    def checkParms(self):
+        if len(getRealText(self.edtOutFilename).strip()) == 0:
+            self.errorMsg(_tr("错误!"), _tr("没有指定输出文件名!"))
+            return False
+        if len(getRealText(self.edtOutDir).strip()) == 0:
+            self.errorMsg(_tr("错误!"), _tr("没有指定输出文件夹!"))
+            return False
+        if not os.path.isdir(getRealText(self.edtOutDir)):
+            self.errorMsg(_tr("错误!"), _tr("输出文件夹不存在或不是文件夹!"))
+            return False
+
+        baseName = self.getTemplateBaseName()
+        path = os.path.join(self.selectedTemplateDir, baseName + ".c.tmpl")
+        if not os.path.isfile(path):
+            self.errorMsg(_tr("错误!"), _tr("模板文件不存在: %s") % path)
+            return False
+        path = os.path.join(self.selectedTemplateDir, baseName + ".h.tmpl")
+        if not os.path.isfile(path):
+            self.errorMsg(_tr("错误!"), _tr("模板文件不存在: %s") % path)
+            return False
+
+        return True
+
     def onClickedGenerate(self):
+        if not self.checkParms():
+            return
+        outName = getRealText(self.edtOutFilename)
+        outDir = getRealText(self.edtOutDir)
+        file_base = os.path.join(outDir, outName)
 
-        # if not self.checkParms():
-        #     return
+        read_name    = getRealText(self.edtReadName)
+        prefix       = getRealText(self.edtPrefix)
+        snake_id     = getRealText(self.edtSnakeID)
+        camel_id     = getRealText(self.edtCamelID)
+        big_snake_id = getRealText(self.edtBigSnakeID)
 
-        data = {
-            # 元数据
-            "version"      : getVersion(),
-            "template_dir" : self.selectedTemplateDir,
+
+        data = { 
+            #元信息
+            "version"              : getVersion(),
+            "template_dir"         : self.selectedTemplateDir,
+            "file_base"            : file_base,
 
             #名称信息
-            "read_name"    : getRealText(self.edtReadName),
-            "prefix"       : getRealText(self.edtPrefix),
-            "snake_id"     : getRealText(self.edtSnakeID),
-            "camel_id"     : getRealText(self.edtCamelID),
-            "big_snake_id" : getRealText(self.edtBigSnakeID),
+            "read_name"    : read_name,
+            "prefix"       : prefix,
+            "snake_id"     : snake_id,
+            "camel_id"     : camel_id,
+            "big_snake_id" : big_snake_id,
 
             #继承信息
             "parent_name"       : getRealText(self.edtParentName),
@@ -285,29 +352,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             "custom" : self.getCustomParameterData(),
         }
         gen = Generator(self.selectedTemplateDir, data)
-        outDir = getRealText(self.edtOutDir)
-        outName = getRealText(self.edtOutFilename)
         f = None
         path = ""
-        baseName = ""
-        if self.rbtnNormalClass.isChecked():
-            baseName = "class"
-        elif  self.rbtnAbstractClass.isChecked():
-            baseName = "abstract"
-        elif  self.rbtnAbstractClass.isChecked():
-            baseName = "interface"
-
+        baseName = self.getTemplateBaseName()
 
         try:
-            path = os.path.join(outDir, outName + ".c")
+            path = file_base + ".c"
             f = open(getUserDataDir(path), 'w')
             f.write(gen.generate(os.path.join(self.selectedTemplateDir, baseName + ".c.tmpl")))
             f.close()
-            path = os.path.join(outDir, outName + ".h")
+            path = file_base + ".h"
             f = open(getUserDataDir(path), 'w')
             f.write(gen.generate(os.path.join(self.selectedTemplateDir, baseName + ".h.tmpl")))
             f.close()
         except Exception as e:
+            self.errorMsg(_tr("错误!"), _tr("生成文件时发生错误!\n文件: %s\n错误: %s\n") % (path, e))
             # QMessageBox::Critical 3 an icon indicating that the message represents a critical problem.
             self.msgBox = QtWidgets.QMessageBox(3, _tr("错误!"), _tr("生成文件时发生错误!\n文件: %s\n错误: %s\n") % (path, str(e)))
             self.msgBox.show()

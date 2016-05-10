@@ -8,7 +8,8 @@ from tenjin.helpers import *
 
 class Generator(object):
     def __init__(self, path, data, encoding='utf-8'):
-        self.engine = tenjin.Engine(path)
+        print('path='+path)
+        self.engine = tenjin.Engine(path=[path])
         self.data = data
 
     def set(self, name, value):
@@ -19,6 +20,5 @@ class Generator(object):
 
     def generate(self, template_file):
         return self.engine.render(template_file,
-                             self.data,
-                             postfix='.tmpl'
-                            )
+                                  context=self.data
+                                 )

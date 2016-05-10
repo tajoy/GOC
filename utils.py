@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 import os
 import re
+import sys
 import config
 
 from PyQt5 import QtCore
@@ -28,14 +29,7 @@ def normal2Camel(text, prefix):
         return normal2Camel(prefix, None) + ret
 
 def normal2BigSnake(text, prefix):
-    arr = text.split(" ")
-    ret = ""
-    for word in arr:
-        ret += word.upper() + "_"
-    if prefix == None:
-        return ret[:-1]
-    else:
-        return normal2BigSnake(prefix, None) + ret
+    return normal2Snake(text, prefix).upper()
 
 def checkNormalSyntax(text):
     arr = text.split(" ")
@@ -109,6 +103,13 @@ def checkIdentifySyntax(text):
     return re.match(r"[a-zA-Z_][a-zA-Z0-9_]*", text)
 
 def getDataDir():
+    if config.debug:
+        #判断为脚本文件还是py2exe编译后的文件，如果是脚本文件，则返回的是脚本的目录，如果是py2exe编译后的文件，则返回的是编译后的文件路径
+        if os.path.isdir(sys.path[0]):
+            return os.path.join(sys.path[0], 'data')
+        elif os.path.isfile(sys.path[0]):
+            return os.path.join(os.path.dirname(sys.path[0]), 'data')
+
     return config.dataDir
 
 def getUserDir():
@@ -125,7 +126,7 @@ def getUserTemplateDir():
 
 
 def getDefaultTemplateDir():
-    path = os.path.join(getDataDir, 'default')
+    path = os.path.join(getDataDir(), 'default')
     if not os.path.exists(path):
         os.mkdir(path)
     return path
