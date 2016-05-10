@@ -222,12 +222,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
 
     def _onActionOpenDefaultTemplateDir(self):
-        dirPath = getDefaultTemplateDir()
+        dirPath = getDefaultTemplateDir().replace("\\", "/")
         QtGui.QDesktopServices.openUrl(QtCore.QUrl(dirPath))
         print("called _onActionOpenDefaultTemplateDir")
 
     def _onActionOpenUserTemplateDir(self):
-        dirPath = getUserTemplateDir()
+        dirPath = getUserTemplateDir().replace("\\", "/")
         QtGui.QDesktopServices.openUrl(QtCore.QUrl(dirPath))
         print("called _onActionOpenUserTemplateDir")
 
