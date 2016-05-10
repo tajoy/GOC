@@ -212,7 +212,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.edtSnakeID.setPlaceholderText(strSnake)
         if len(self.edtCamelID.text()) == 0:
             self.edtCamelID.setPlaceholderText(strCamel)
-            self.edtOutFilename.setPlaceholderText(strCamel)
+            self.edtOutFilename.setPlaceholderText(strCamel.lower())
         if len(self.edtBigSnakeID.text()) == 0:
             self.edtBigSnakeID.setPlaceholderText(strBigSnake)
 
@@ -316,19 +316,26 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         outName = getRealText(self.edtOutFilename)
         outDir = getRealText(self.edtOutDir)
         file_base = os.path.join(outDir, outName)
+
+        read_name    = getRealText(self.edtReadName)
+        prefix       = getRealText(self.edtPrefix)
+        snake_id     = getRealText(self.edtSnakeID)
+        camel_id     = getRealText(self.edtCamelID)
+        big_snake_id = getRealText(self.edtBigSnakeID)
+
+
         data = { 
             #元信息
             "version"              : getVersion(),
             "template_dir"         : self.selectedTemplateDir,
             "file_base"            : file_base,
-            "include_guard_symbol" : (getRealText(self.edtPrefix).upper()+"_"+os.path.include(file_base)+"_H_").upper(),
 
             #名称信息
-            "read_name"    : getRealText(self.edtReadName),
-            "prefix"       : getRealText(self.edtPrefix),
-            "snake_id"     : getRealText(self.edtSnakeID),
-            "camel_id"     : getRealText(self.edtCamelID),
-            "big_snake_id" : getRealText(self.edtBigSnakeID),
+            "read_name"    : read_name,
+            "prefix"       : prefix,
+            "snake_id"     : snake_id,
+            "camel_id"     : camel_id,
+            "big_snake_id" : big_snake_id,
 
             #继承信息
             "parent_name"       : getRealText(self.edtParentName),

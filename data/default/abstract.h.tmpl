@@ -1,7 +1,7 @@
 <?py include('./header.h.tmpl') ?>
 
-#ifndef ${include_guard_symbol}
-#define ${include_guard_symbol}
+#ifndef _${big_snake_id}_H_
+#define _${big_snake_id}_H_
 
 /************ includes ************/
 #include <glib-object.h>
@@ -37,4 +37,4 @@ struct _${camel_id}Class
 GType ${snake_id}_get_type();
 
 G_END_DECLS
-#endif /* ${include_guard_symbol} */
+#endif /* _${big_snake_id}_H_ */
