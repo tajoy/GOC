@@ -131,3 +131,5 @@ Thumbs.db
 *.dll
 *.exe
 
+################## my project ignore
+*.cache
