@@ -1,16 +1,16 @@
+<?py # -*- coding: utf-8 -*- ?>
 <?py include('./header.c.tmpl') ?>
 
-
 /************ includes ************/
-#include "${file_base}.h"
+#include "#{file_base}.h"
 
 
 /************ defines ************/
-G_DEFINE_ABSTRACT_TYPE(${camel_id}, ${snake_id}, ${parent_type_macro})
-#define GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), TYPE_${big_snake_id}, ${camel_id}Private))
+G_DEFINE_ABSTRACT_TYPE(#{camel_id}, #{snake_id}, #{parent_type_macro})
+#define GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), TYPE_#{big_snake_id}, #{camel_id}Private))
 
 /************ types ************/
-struct _${camel_id}Private
+struct _#{camel_id}Private
 {
     gint prop_one;
     gint prop_two;
@@ -39,10 +39,10 @@ static void get_property_od(GObject*object, guint property_id, GValue *value, GP
 static void set_property_od(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
 
 /************ function implements ************/
-static void ${snake_id}_class_init(${camel_id}Class *klass)
+static void #{snake_id}_class_init(#{camel_id}Class *klass)
 {
     GObjectClass *g_object_class = G_OBJECT_CLASS(klass);
-    g_type_class_add_private(g_object_class, sizeof(${camel_id}Private));
+    g_type_class_add_private(g_object_class, sizeof(#{camel_id}Private));
     g_object_class->dispose = dispose_od;
     g_object_class->finalize = finalize_od;
     g_object_class->get_property = get_property_od;
@@ -73,32 +73,32 @@ static void ${snake_id}_class_init(${camel_id}Class *klass)
         obj_properties);
 }
 
-static void ${snake_id}_init(${camel_id} *self)
+static void #{snake_id}_init(#{camel_id} *self)
 {
-    ${camel_id}Private *priv = GET_PRIVATE(self);
+    #{camel_id}Private *priv = GET_PRIVATE(self);
 }
 
 static void dispose_od(GObject *object)
 {
-    ${camel_id} *self = (${camel_id}*)object;
-    ${camel_id}Private *priv = GET_PRIVATE(self);
+    #{camel_id} *self = (#{camel_id}*)object;
+    #{camel_id}Private *priv = GET_PRIVATE(self);
     // 释放创建的对象
-    G_OBJECT_CLASS(${snake_id}_parent_class)->dispose(object);
+    G_OBJECT_CLASS(#{snake_id}_parent_class)->dispose(object);
 }
 
 static void finalize_od(GObject *object)
 {
-    ${camel_id} *self = (${camel_id}*)object;
-    ${camel_id}Private *priv = GET_PRIVATE(self);
+    #{camel_id} *self = (#{camel_id}*)object;
+    #{camel_id}Private *priv = GET_PRIVATE(self);
     // 释放创建的内存
-    G_OBJECT_CLASS(${snake_id}_parent_class)->finalize(object);
+    G_OBJECT_CLASS(#{snake_id}_parent_class)->finalize(object);
 }
 
 
 static void get_property_od(GObject*object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-    ${camel_id} *self = ${big_snake_id} (object);
-    ${camel_id}Private *priv = GET_PRIVATE(self);
+    #{camel_id} *self = #{big_snake_id} (object);
+    #{camel_id}Private *priv = GET_PRIVATE(self);
 
     switch (property_id)
     {
@@ -119,8 +119,8 @@ static void get_property_od(GObject*object, guint property_id, GValue *value, GP
 
 static void set_property_od(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-    ${camel_id} *self = ${big_snake_id} (object);
-    ${camel_id}Private *priv = GET_PRIVATE(self);
+    #{camel_id} *self = #{big_snake_id} (object);
+    #{camel_id}Private *priv = GET_PRIVATE(self);
 
     switch (property_id)
     {

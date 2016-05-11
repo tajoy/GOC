@@ -328,7 +328,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             #元信息
             "version"              : getVersion(),
             "template_dir"         : self.selectedTemplateDir,
-            "file_base"            : file_base,
+            "file_base"            : outName,
 
             #名称信息
             "read_name"    : read_name,

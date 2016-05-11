@@ -3,13 +3,13 @@
 
 import tenjin
 tenjin.set_template_encoding('utf-8')
-from tenjin.helpers import *
+from tenjin.helpers import to_str, echo
 
 
 class Generator(object):
     def __init__(self, path, data, encoding='utf-8'):
         print('path='+path)
-        self.engine = tenjin.Engine(path=[path])
+        self.engine = tenjin.Engine(path=[path], escapefunc=to_str)
         self.data = data
 
     def set(self, name, value):
