@@ -1,1 +1,33 @@
 <?py # -*- coding: utf-8 -*- ?>
+<?py include('./header.h.tmpl') ?>
+
+#ifndef _#{big_snake_id}_H_
+#define _#{big_snake_id}_H_
+
+/************ includes ************/
+#include <glib-object.h>
+
+/************ defines ************/
+G_BEGIN_DECLS
+
+#define TYPE_#{big_snake_id} (#{snake_id}_get_type())
+#define #{big_snake_id}(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj),TYPE_#{big_snake_id}, #{camel_id}))
+#define IS_#{big_snake_id}(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj),TYPE_#{big_snake_id}))
+#define #{big_snake_id}_GET_INTERFACE(obj) (G_TYPE_INSTANCE_GET_INTERFACE ((o), TYPE_#{big_snake_id}, #{camel_id}Interface))
+
+/************ types ************/
+typedef struct _#{camel_id}Interface       #{camel_id}Interface;
+
+struct _#{camel_id}Interface
+{
+    #{parent_class_name} parent_iface;
+};
+
+/************ globals ************/
+
+
+/************ function declarations ************/
+GType #{snake_id}_get_type();
+
+G_END_DECLS
+#endif /* _#{big_snake_id}_H_ */

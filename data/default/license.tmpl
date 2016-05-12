@@ -1,6 +1,12 @@
 <?py # -*- coding: utf-8 -*- ?>
-<py? import time>
-
+<py? import time ?>
+<py? if 'author' in dir(): ?>
+<py?    name = author ?>
+<py? elif 'company' in dir(): ?>
+<py?    name = company ?>
+<py? else ?>
+<py?    name = "" ?>
+<py? #endif ?>
 /*
- * Copyright (C) #${time.strftime("%Y")} #${author if 'author' in dir() else ""} All right reserved. 
+ * Copyright (C) #${time.strftime("%Y")} #{name} All right reserved. 
  */
