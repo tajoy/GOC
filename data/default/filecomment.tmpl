@@ -1,5 +1,5 @@
 <?py # -*- coding: utf-8 -*- ?>
-
+<?py import time ?>
 /**
  * SECTION: #{file_base}
  * @short_description: #{camel_id}类.
@@ -9,13 +9,11 @@
  * @include: #{file_base}.h
  * 
  * 
-<?py if 'module' in dir():>
- * 所属模块: #{module}
-<?py #endif>
+<?py _module = module if 'module' in dir() else 'TODO:添加模块名' ?>
+ * 所属模块: #{_module}
  * 
-<?py if 'author' in dir():>
- * 作者: #{author}
-<?py #endif>
+<?py _author = author if 'author' in dir() else 'TODO:添加作者名' ?>
+ * 作者: #{_author}
  * 
  * 
  * 创建于: #{time.strftime("%Y-%m-%d %H:%M:%S")}
@@ -23,8 +21,6 @@
  * 主要功能:
  *  - TODO: 添加功能列表
  * 
- * # 实现的接口:
- * - #IfaceName, #IfaceName2
  * 
  * Since: 1.0.0
  */
