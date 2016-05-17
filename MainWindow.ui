@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>754</width>
-    <height>841</height>
+    <height>899</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -140,6 +140,9 @@
              <widget class="QRadioButton" name="rbtnAbstractClass">
               <property name="text">
                <string>抽象类</string>
+              </property>
+              <property name="checked">
+               <bool>false</bool>
               </property>
              </widget>
             </item>
@@ -331,17 +334,25 @@
           </widget>
          </item>
          <item>
-          <widget class="QGroupBox" name="groupBox_3">
+          <widget class="QGroupBox" name="groupBox_8">
            <property name="title">
-            <string>实现的接口</string>
+            <string>自定义模版参数</string>
            </property>
-           <layout class="QVBoxLayout" name="verticalLayout_6">
+           <layout class="QVBoxLayout" name="verticalLayout_15">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="leftMargin">
+             <number>9</number>
+            </property>
+            <property name="rightMargin">
+             <number>9</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
             <item>
-             <widget class="QTableView" name="lstImplInteface">
-              <property name="toolTip">
-               <string>请填写获取GType的表达式/函数/宏!</string>
-              </property>
-             </widget>
+             <widget class="QTableView" name="lstCustomParameters"/>
             </item>
            </layout>
           </widget>
@@ -351,14 +362,60 @@
        <item>
         <widget class="QFrame" name="formFrame">
          <layout class="QVBoxLayout" name="verticalLayout_3">
+          <property name="margin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QGroupBox" name="groupBox_3">
+            <property name="title">
+             <string>实现的接口</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_6">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QTableView" name="lstImplInteface">
+               <property name="toolTip">
+                <string>请填写获取GType的表达式/函数/宏!</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
           <item>
            <widget class="QGroupBox" name="groupBox">
             <property name="title">
              <string>属性</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_4">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
              <item>
               <widget class="QTableView" name="lstProperties">
+               <property name="minimumSize">
+                <size>
+                 <width>400</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string/>
+               </property>
                <property name="styleSheet">
                 <string notr="true"/>
                </property>
@@ -373,20 +430,23 @@
              <string>信号</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_5">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>9</number>
+             </property>
+             <property name="rightMargin">
+              <number>9</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
              <item>
               <widget class="QTableView" name="lstSignals"/>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item>
-           <widget class="QGroupBox" name="groupBox_8">
-            <property name="title">
-             <string>自定义模版参数</string>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout_15">
-             <item>
-              <widget class="QTableView" name="lstCustomParameters"/>
              </item>
             </layout>
            </widget>
@@ -456,7 +516,7 @@
      <x>0</x>
      <y>0</y>
      <width>754</width>
-     <height>23</height>
+     <height>28</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">

@@ -80,6 +80,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.lstCustomParameters.setModel(self.modelCustomParameter)
         self.lstCustomParameters.setItemDelegate(self.delegateCustomParameter)
 
+
     def _init_connects(self):
         self.cbxTemplate.currentIndexChanged.connect(self._onTemplateComboBoxSelected)
         self.edtReadName.textEdited.connect(self._onNameOrPrefixChanged)
@@ -93,65 +94,34 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     value.textEdited.connect(self.saveUIData)
             )
 
-        self.btnGenerate.clicked.connect(self.onClickedGenerate)
+        self.btnGenerate.clicked.connect(self._onClickedGenerate)
 
         self.selectDialog.accepted.connect(self._onClickedSelectDir)
         self.btnSelOutDir.clicked.connect(self.selectDialog.exec)
+
+
+        self.rbtnNormalClass.clicked.connect(self._onRadioBtnClicked)
+        self.rbtnAbstractClass.clicked.connect(self._onRadioBtnClicked)
+        self.rbtnInterface.clicked.connect(self._onRadioBtnClicked)
+
 
         ########### 菜单 ###########
         self.act_open_default_tmpl_dir.triggered.connect(self._onActionOpenDefaultTemplateDir)
         self.act_open_user_tmpl_dir.triggered.connect(self._onActionOpenUserTemplateDir)
 
-    def loadTemplateDirs(self):
-        self.cbxTemplate.clear()
-        self.allTemplateDirs = []
-        self.cbxTemplate.addItem(_tr('默认模板'))
-        for root, dirs, files in os.walk(getUserTemplateDir()):
-            for d in dirs:
-                # 只遍历一级目录
-                if len(os.path.split(d)) == 1             \
-                    or (                                  \
-                        len(os.path.split(d)) == 2        \
-                        and (                             \
-                            os.path.split(d)[0] == ''     \
-                            or os.path.split(d)[1] == '') \
-                        ):
-                    path = os.path.join(root, d)
-                    self.allTemplateDirs.append(path)
-        userTemplateDirs = []
-        for path in self.allTemplateDirs:
-            userTemplateDirs.append(                      \
-                    path.replace(getUserTemplateDir(),"") \
-                        .replace("/","")                  \
-                        .replace("\\","")                 \
-                )
-        self.cbxTemplate.addItems(userTemplateDirs)
-        self.cbxTemplate.setCurrentIndex(0)
-        self.selectedTemplateDir = getDefaultTemplateDir()
+    def _onRadioBtnClicked(self):
+        if self.rbtnNormalClass.isChecked() or self.rbtnAbstractClass.isChecked():
+            self.edtParentPrefix.setEnabled(True)
+            self.edtParentName.setEnabled(True)
+            self.edtParentClassName.setEnabled(True)
+            self.edtParentTypeMacro.setEnabled(True)
+        elif self.rbtnInterface.isChecked():
+            self.edtParentPrefix.setEnabled(False)
+            self.edtParentName.setEnabled(False)
+            self.edtParentClassName.setEnabled(False)
+            self.edtParentTypeMacro.setEnabled(False)
 
-    def readUIData(self):
-        filepath = getUserDataDir("uidata.json")
-        if not os.path.exists(filepath):
-            return
-        f = open(filepath, 'r')
-        data = json.loads(f.read())
-        f.close()
-        def read_cb(name, value):
-            if name in data:
-                value.setPlaceholderText(data[name])
-        scanSelf(self, QtWidgets.QLineEdit, read_cb)
-
-    def saveUIData(self):
-        print("saveUIData")
-        data = {}
-        def save_cb(name, value):
-            data[name] = getRealText(value)
-        scanSelf(self, QtWidgets.QLineEdit, save_cb)
-        data_str = json.dumps(data)
-        f = open(getUserDataDir("uidata.json"), 'w')
-        f.write(data_str)
-        f.close()
-
+        
     def _onTemplateComboBoxSelected(self, index):
         if index == 0 or index == -1:
             self.selectedTemplateDir = getDefaultTemplateDir()
@@ -220,7 +190,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.edtOutDir.setText(self.selectDialog.selectedFiles()[0])
         self.saveUIData()
 
-
     def _onActionOpenDefaultTemplateDir(self):
         dirPath = getDefaultTemplateDir().replace("\\", "/")
         QtGui.QDesktopServices.openUrl(QtCore.QUrl(dirPath))
@@ -231,96 +200,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         QtGui.QDesktopServices.openUrl(QtCore.QUrl(dirPath))
         print("called _onActionOpenUserTemplateDir")
 
-    def getInterfaceData(self):
-        data = []
-        cout = self.modelInterface.rowCount()
-        for i in range(0, cout):
-            if self.modelInterface.item(i, 0):
-                data += {
-                    "type_macro": self.modelInterface.item(i, 0).text(),
-                }
-        return data
-
-    def getPropertyData(self):
-        data = []
-        cout = self.modelProperty.rowCount()
-        for i in range(0, cout):
-            if self.modelProperty.item(i, 0):
-                data += {
-                    "name"   : self.modelProperty.item(i, 0).text(),
-                    "type"   : self.modelProperty.item(i, 1).text(),
-                    "default": self.modelProperty.item(i, 2).text(),
-                    "max"    : self.modelProperty.item(i, 3).text(),
-                    "min"    : self.modelProperty.item(i, 4).text(),
-                }
-        return data
-
-    def getSignalData(self):
-        data = []
-        cout = self.modelSignal.rowCount()
-        for i in range(0, cout):
-            if self.modelSignal.item(i, 0):
-                data += {
-                    "name": self.modelSignal.item(i, 0).text(),
-                    "type": self.modelSignal.item(i, 1).text(),
-                }
-        return data
-
-    def getCustomParameterData(self):
-        data = []
-        cout = self.modelCustomParameter.rowCount()
-        for i in range(0, cout):
-            if self.modelCustomParameter.item(i, 0):
-                data[self.modelCustomParameter.item(i, 0).text()] = self.modelCustomParameter.item(i, 1).text()
-        return data
-
-    def errorMsg(self, title, text):
-        # QMessageBox::Critical 3 an icon indicating that the message represents a critical problem.
-        self.msgBox = QtWidgets.QMessageBox(3, title, text)
-        self.msgBox.show()
-
-    def getTemplateBaseName(self):
-        if self.rbtnNormalClass.isChecked():
-            return "class"
-        elif  self.rbtnAbstractClass.isChecked():
-            return "abstract"
-        elif  self.rbtnInterface.isChecked():
-            return "interface"
-
-    def checkParms(self):
-        if len(getRealText(self.edtOutFilename).strip()) == 0:
-            self.errorMsg(_tr("错误!"), _tr("没有指定输出文件名!"))
-            return False
-        if len(getRealText(self.edtOutDir).strip()) == 0:
-            self.errorMsg(_tr("错误!"), _tr("没有指定输出文件夹!"))
-            return False
-        if not os.path.isdir(getRealText(self.edtOutDir)):
-            self.errorMsg(_tr("错误!"), _tr("输出文件夹不存在或不是文件夹!"))
-            return False
-
-        baseName = self.getTemplateBaseName()
-        path = os.path.join(self.selectedTemplateDir, baseName + ".c.tmpl")
-        if not os.path.isfile(path):
-            self.errorMsg(_tr("错误!"), _tr("模板文件不存在: %s") % path)
-            return False
-        path = os.path.join(self.selectedTemplateDir, baseName + ".h.tmpl")
-        if not os.path.isfile(path):
-            self.errorMsg(_tr("错误!"), _tr("模板文件不存在: %s") % path)
-            return False
-
-        return True
-
-    def onClickedGenerate(self):
+    def _onClickedGenerate(self):
         if not self.checkParms():
             return
         outName = getRealText(self.edtOutFilename)
         outDir = getRealText(self.edtOutDir)
         file_base = os.path.join(outDir, outName)
 
-        read_name    = getRealText(self.edtReadName)
-        prefix       = getRealText(self.edtPrefix)
-        snake_id     = getRealText(self.edtSnakeID)
-        camel_id     = getRealText(self.edtCamelID)
+        read_name = getRealText(self.edtReadName)
+        prefix = getRealText(self.edtPrefix)
+        snake_id = getRealText(self.edtSnakeID)
+        camel_id = getRealText(self.edtCamelID)
         big_snake_id = getRealText(self.edtBigSnakeID)
 
 
@@ -375,3 +265,134 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 f.close()
 
 
+    def loadTemplateDirs(self):
+        self.cbxTemplate.clear()
+        self.allTemplateDirs = []
+        self.cbxTemplate.addItem(_tr('默认模板'))
+        for root, dirs, files in os.walk(getUserTemplateDir()):
+            for d in dirs:
+                # 只遍历一级目录
+                if len(os.path.split(d)) == 1             \
+                    or (                                  \
+                        len(os.path.split(d)) == 2        \
+                        and (                             \
+                            os.path.split(d)[0] == ''     \
+                            or os.path.split(d)[1] == '') \
+                        ):
+                    path = os.path.join(root, d)
+                    self.allTemplateDirs.append(path)
+        userTemplateDirs = []
+        for path in self.allTemplateDirs:
+            userTemplateDirs.append(                      \
+                    path.replace(getUserTemplateDir(),"") \
+                        .replace("/","")                  \
+                        .replace("\\","")                 \
+                )
+        self.cbxTemplate.addItems(userTemplateDirs)
+        self.cbxTemplate.setCurrentIndex(0)
+        self.selectedTemplateDir = getDefaultTemplateDir()
+
+    def readUIData(self):
+        filepath = getUserDataDir("uidata.json")
+        if not os.path.exists(filepath):
+            return
+        f = open(filepath, 'r')
+        data = json.loads(f.read())
+        f.close()
+        def read_cb(name, value):
+            if name in data:
+                value.setPlaceholderText(data[name])
+        scanSelf(self, QtWidgets.QLineEdit, read_cb)
+
+    def saveUIData(self):
+        print("saveUIData")
+        data = {}
+        def save_cb(name, value):
+            data[name] = getRealText(value)
+        scanSelf(self, QtWidgets.QLineEdit, save_cb)
+        data_str = json.dumps(data)
+        f = open(getUserDataDir("uidata.json"), 'w')
+        f.write(data_str)
+        f.close()
+
+    def getInterfaceData(self):
+        data = []
+        cout = self.modelInterface.rowCount()
+        for i in range(0, cout):
+            if self.modelInterface.item(i, 0) \
+                and len(self.modelInterface.item(i, 0).text().trim()) > 0:
+                data.append({
+                    "type_macro": self.modelInterface.item(i, 0).text(),
+                })
+        return data
+
+    def getPropertyData(self):
+        data = []
+        cout = self.modelProperty.rowCount()
+        for i in range(0, cout):
+            if self.modelProperty.item(i, 0):
+                data.append({
+                    "name":    self.modelProperty.item(i, 0).text(),
+                    "type":    self.modelProperty.item(i, 1).text(),
+                    "default": self.modelProperty.item(i, 2).text(),
+                    "max":     self.modelProperty.item(i, 3).text(),
+                    "min":     self.modelProperty.item(i, 4).text(),
+                })
+        return data
+
+    def getSignalData(self):
+        data = []
+        cout = self.modelSignal.rowCount()
+        for i in range(0, cout):
+            if self.modelSignal.item(i, 0):
+                data.append({
+                    "name": self.modelSignal.item(i, 0).text(),
+                    "type": self.modelSignal.item(i, 1).text(),
+                })
+        return data
+
+    def getCustomParameterData(self):
+        data = {}
+        cout = self.modelCustomParameter.rowCount()
+        for i in range(0, cout):
+            if self.modelCustomParameter.item(i, 0):
+                data[
+                    self.modelCustomParameter.item(i, 0).text()
+                ] = self.modelCustomParameter.item(i, 1).text()
+        return data
+
+    def errorMsg(self, title, text):
+        # QMessageBox::Critical 3 an icon indicating that the message represents a critical problem.
+        self.msgBox = QtWidgets.QMessageBox(3, title, text)
+        self.msgBox.show()
+
+    def getTemplateBaseName(self):
+        if self.rbtnNormalClass.isChecked():
+            return "class"
+        elif self.rbtnAbstractClass.isChecked():
+            return "abstract"
+        elif self.rbtnInterface.isChecked():
+            return "interface"
+
+    def checkParms(self):
+        if len(getRealText(self.edtOutFilename).strip()) == 0:
+            self.errorMsg(_tr("错误!"), _tr("没有指定输出文件名!"))
+            return False
+        if len(getRealText(self.edtOutDir).strip()) == 0:
+            self.errorMsg(_tr("错误!"), _tr("没有指定输出文件夹!"))
+            return False
+        if not os.path.isdir(getRealText(self.edtOutDir)):
+            self.errorMsg(_tr("错误!"), _tr("输出文件夹不存在或不是文件夹!"))
+            return False
+
+        baseName = self.getTemplateBaseName()
+        path = os.path.join(self.selectedTemplateDir, baseName + ".c.tmpl")
+        if not os.path.isfile(path):
+            self.errorMsg(_tr("错误!"), _tr("模板文件不存在: %s") % path)
+            return False
+        path = os.path.join(self.selectedTemplateDir, baseName + ".h.tmpl")
+        if not os.path.isfile(path):
+            self.errorMsg(_tr("错误!"), _tr("模板文件不存在: %s") % path)
+            return False
+
+        return True
