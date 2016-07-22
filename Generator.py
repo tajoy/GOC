@@ -9,7 +9,7 @@ import config
 class Generator(object):
     def __init__(self, path, data, encoding='utf-8'):
         print('path='+path)
-        self.engine = tenjin.Engine(path=[path], postfix='.tmpl', trace=config.debug)
+        self.engine = tenjin.Engine(path=[path], postfix='.tmpl', trace=False)
         self.data = data
 
     def set(self, name, value):

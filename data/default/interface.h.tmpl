@@ -10,10 +10,10 @@
 /************ defines ************/
 G_BEGIN_DECLS
 
-#define TYPE_#{big_snake_id} (#{snake_id}_get_type())
-#define #{big_snake_id}(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj),TYPE_#{big_snake_id}, #{camel_id}))
-#define IS_#{big_snake_id}(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj),TYPE_#{big_snake_id}))
-#define #{big_snake_id}_GET_INTERFACE(obj) (G_TYPE_INSTANCE_GET_INTERFACE ((o), TYPE_#{big_snake_id}, #{camel_id}Interface))
+#define #{prefix.upper()}_TYPE_#{big_snake_name}               (#{snake_id}_get_type())
+#define #{prefix.upper()}_#{big_snake_name}(obj)               (G_TYPE_CHECK_INSTANCE_CAST((obj),#{prefix.upper()}_TYPE_#{big_snake_name}, #{camel_id}))
+#define #{prefix.upper()}_IS_#{big_snake_name}(obj)            (G_TYPE_CHECK_INSTANCE_TYPE((obj),#{prefix.upper()}_TYPE_#{big_snake_name}))
+#define #{prefix.upper()}_GET_#{big_snake_name}_INTERFACE(obj) (G_TYPE_INSTANCE_GET_INTERFACE ((o), #{prefix.upper()}_TYPE_#{big_snake_name}, #{camel_id}Interface))
 
 /************ types ************/
 typedef struct _#{camel_id}Interface       #{camel_id}Interface;

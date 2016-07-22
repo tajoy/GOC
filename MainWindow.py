@@ -212,8 +212,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         snake_id = getRealText(self.edtSnakeID)
         camel_id = getRealText(self.edtCamelID)
         big_snake_id = getRealText(self.edtBigSnakeID)
-
-
+        big_snake_name = big_snake_id[len(prefix)+1:]
+        
         data = { 
             #元信息
             "version"              : getVersion(),
@@ -226,6 +226,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             "snake_id"     : snake_id,
             "camel_id"     : camel_id,
             "big_snake_id" : big_snake_id,
+            "big_snake_name" : big_snake_name,
 
             #继承信息
             "parent_name"       : getRealText(self.edtParentName),

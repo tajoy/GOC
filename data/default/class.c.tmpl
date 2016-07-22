@@ -8,7 +8,7 @@
 
 /************ defines ************/
 G_DEFINE_TYPE(#{camel_id}, #{snake_id}, #{parent_type_macro})
-#define GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), TYPE_#{big_snake_id}, #{camel_id}Private))
+#define GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), #{prefix.upper()}_TYPE_#{big_snake_name}, #{camel_id}Private))
 
 /************ types ************/
 struct _#{camel_id}Private
@@ -138,4 +138,10 @@ static void set_property_od(GObject *object, guint property_id, const GValue *va
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
         break;
     }
+}
+
+#{camel_id} * #{snake_id}_new()
+{
+    #{camel_id} * ret = g_object_new(#{prefix.upper()}_TYPE_#{big_snake_name}, NULL);
+    return ret;
 }
