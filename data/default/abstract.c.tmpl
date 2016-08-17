@@ -7,7 +7,7 @@
 
 /************ defines ************/
 G_DEFINE_ABSTRACT_TYPE(#{camel_id}, #{snake_id}, #{parent_type_macro})
-#define GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), TYPE_#{big_snake_id}, #{camel_id}Private))
+#define GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), #{prefix.upper()}_TYPE_#{big_snake_name}, #{camel_id}Private))
 
 /************ types ************/
 struct _#{camel_id}Private
