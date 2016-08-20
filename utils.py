@@ -12,7 +12,7 @@ def normal2Snake(text, prefix):
     ret = ""
     for word in arr:
         ret += word.lower() + "_"
-    if prefix == None:
+    if prefix == None or prefix == "":
         return ret[:-1]
     else:
         return normal2Snake(prefix, None) + "_" + ret[:-1]
@@ -23,7 +23,7 @@ def normal2Camel(text, prefix):
     ret = ""
     for word in arr:
         ret += word[0:1].upper() + word.lower()[1:]
-    if prefix == None:
+    if prefix == None or prefix == "":
         return ret
     else:
         return normal2Camel(prefix, None) + ret

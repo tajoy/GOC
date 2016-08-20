@@ -83,8 +83,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def _init_connects(self):
         self.cbxTemplate.currentIndexChanged.connect(self._onTemplateComboBoxSelected)
-        self.edtReadName.textEdited.connect(self._onNameOrPrefixChanged)
-        self.edtPrefix.textEdited.connect(self._onNameOrPrefixChanged)
+        self.edtReadName.textEdited.connect(self._onNameChanged)
+        self.edtPrefix.textEdited.connect(self._onPrefixChanged)
         self.edtSnakeID.textEdited.connect(self._onSnakeIDChanged)
         self.edtCamelID.textEdited.connect(self._onCamelIDChanged)
         self.edtBigSnakeID.textEdited.connect(self._onBigSnakeIDChanged)
@@ -164,7 +164,33 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.edtBigSnakeID.undo()
             return
 
-    def _onNameOrPrefixChanged(self, text):
+    def _onPrefixChanged(self, text):
+        name = getRealText(self.edtReadName)
+        prefix = getRealText(self.edtPrefix)
+        if not checkNormalSyntax(name):
+            self.edtReadName.undo()
+            return
+        if not checkNormalSyntax(prefix):
+            self.edtPrefix.undo()
+            return
+
+        if text.strip() == "":
+            prefix = ""
+            self.edtPrefix.setText("")
+
+        strSnake = normal2Snake(name, prefix)
+        strCamel = normal2Camel(name, prefix)
+        strBigSnake = normal2BigSnake(name, prefix)
+
+        if len(self.edtSnakeID.text()) == 0:
+            self.edtSnakeID.setPlaceholderText(strSnake)
+        if len(self.edtCamelID.text()) == 0:
+            self.edtCamelID.setPlaceholderText(strCamel)
+            self.edtOutFilename.setPlaceholderText(strCamel.lower())
+        if len(self.edtBigSnakeID.text()) == 0:
+            self.edtBigSnakeID.setPlaceholderText(strBigSnake)
+
+    def _onNameChanged(self, text):
         name = getRealText(self.edtReadName)
         prefix = getRealText(self.edtPrefix)
         if not checkNormalSyntax(name):
