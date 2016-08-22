@@ -7,16 +7,38 @@
 
 
 /************ defines ************/
+
+<?py if prefix.strip() == "" or prefix == None: ?>
+    <?py MACRO_TYPE = "TYPE_" + big_snake_name ?>
+    <?py MACRO_OBJ = big_snake_name ?>
+    <?py MACRO_OBJ_CLASS = big_snake_name + "_CLASS" ?>
+    <?py MACRO_IS_OBJ = "IS_" + big_snake_name ?>
+    <?py MACRO_IS_CLASS = "IS_" + big_snake_name + "_CLASS" ?>
+    <?py MACRO_GET_OBJ_CLASS = "GET_" + big_snake_name + "_CLASS" ?>
+<?py else: ?>
+    <?py MACRO_TYPE = prefix.upper() + "_TYPE_" + big_snake_name ?>
+    <?py MACRO_OBJ = prefix.upper() + "_" + big_snake_name ?>
+    <?py MACRO_OBJ_CLASS = prefix.upper() + "_" + big_snake_name + "_CLASS" ?>
+    <?py MACRO_IS_OBJ = prefix.upper() + "_IS_" + big_snake_name ?>
+    <?py MACRO_IS_CLASS = prefix.upper() + "_IS_" + big_snake_name + "_CLASS" ?>
+    <?py MACRO_GET_OBJ_CLASS = prefix.upper() + "_GET_" + big_snake_name + "_CLASS" ?>
+<?py #endif ?>
+
 G_DEFINE_TYPE(#{camel_id}, #{snake_id}, #{parent_type_macro})
-#define GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), #{prefix.upper()}_TYPE_#{big_snake_name}, #{camel_id}Private))
+#define GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), #{MACRO_TYPE}, #{camel_id}Private))
 
 /************ types ************/
 struct _#{camel_id}Private
 {
+<?py if len(impl_property) > 0: ?> 
     gint prop_one;
     gint prop_two;
+<?py else: ?>
+    gint __unuse__;
+<?py #endif ?>
 };
 
+<?py if len(impl_property) > 0: ?> 
 enum _Properties
 {
     __PROPERTIES_BEGIN__, /* unuse */
@@ -26,18 +48,23 @@ enum _Properties
 
     N_PROPERTIES
 };
-
+<?py #endif ?>
 
 /************ globals ************/
+<?py if len(impl_property) > 0: ?> 
 static GParamSpec *obj_properties[N_PROPERTIES] = { NULL, };
+<?py #endif ?>
 
 
 /************ function declarations ************/
 
 static void dispose_od(GObject *object);
 static void finalize_od(GObject *object);
+<?py if len(impl_property) > 0: ?> 
 static void get_property_od(GObject*object, guint property_id, GValue *value, GParamSpec *pspec);
 static void set_property_od(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
+<?py #endif ?>
+
 
 /************ function implements ************/
 static void #{snake_id}_class_init(#{camel_id}Class *klass)
@@ -46,6 +73,8 @@ static void #{snake_id}_class_init(#{camel_id}Class *klass)
     g_type_class_add_private(g_object_class, sizeof(#{camel_id}Private));
     g_object_class->dispose = dispose_od;
     g_object_class->finalize = finalize_od;
+
+<?py if len(impl_property) > 0: ?> 
     g_object_class->get_property = get_property_od;
     g_object_class->set_property = set_property_od;
 
@@ -72,6 +101,7 @@ static void #{snake_id}_class_init(#{camel_id}Class *klass)
     g_object_class_install_properties (g_object_class,
         N_PROPERTIES,
         obj_properties);
+<?py #endif ?>
 }
 
 static void #{snake_id}_init(#{camel_id} *self)
@@ -96,6 +126,7 @@ static void finalize_od(GObject *object)
 }
 
 
+<?py if len(impl_property) > 0: ?> 
 static void get_property_od(GObject*object, guint property_id, GValue *value, GParamSpec *pspec)
 {
     #{camel_id} *self = #{big_snake_id} (object);
@@ -139,9 +170,10 @@ static void set_property_od(GObject *object, guint property_id, const GValue *va
         break;
     }
 }
+<?py #endif ?>
 
 #{camel_id} * #{snake_id}_new()
 {
-    #{camel_id} * ret = g_object_new(#{prefix.upper()}_TYPE_#{big_snake_name}, NULL);
+    #{camel_id} * ret = g_object_new(#{MACRO_TYPE}, NULL);
     return ret;
 }

@@ -10,10 +10,23 @@
 /************ defines ************/
 G_BEGIN_DECLS
 
-#define #{prefix.upper()}_TYPE_#{big_snake_name}               (#{snake_id}_get_type())
-#define #{prefix.upper()}_#{big_snake_name}(obj)               (G_TYPE_CHECK_INSTANCE_CAST((obj),#{prefix.upper()}_TYPE_#{big_snake_name}, #{camel_id}))
-#define #{prefix.upper()}_IS_#{big_snake_name}(obj)            (G_TYPE_CHECK_INSTANCE_TYPE((obj),#{prefix.upper()}_TYPE_#{big_snake_name}))
-#define #{prefix.upper()}_GET_#{big_snake_name}_INTERFACE(obj) (G_TYPE_INSTANCE_GET_INTERFACE ((obj), #{prefix.upper()}_TYPE_#{big_snake_name}, #{camel_id}Interface))
+<?py if prefix.strip() == "" or prefix == None: ?>
+    <?py MACRO_TYPE = "TYPE_" + big_snake_name ?>
+    <?py MACRO_OBJ = big_snake_name ?>
+    <?py MACRO_IS_OBJ = "IS_" + big_snake_name ?>
+    <?py MACRO_GET_INTERFACE = "GET_" + big_snake_name + "_INTERFACE" ?>
+<?py else: ?>
+    <?py MACRO_TYPE = prefix.upper() + "_TYPE_" + big_snake_name ?>
+    <?py MACRO_OBJ = prefix.upper() + "_" + big_snake_name ?>
+    <?py MACRO_IS_OBJ = prefix.upper() + "_IS_" + big_snake_name ?>
+    <?py MACRO_GET_INTERFACE = prefix.upper() + "_GET_" + big_snake_name + "_INTERFACE" ?>
+<?py #endif ?>
+
+
+#define #{MACRO_TYPE}               (#{snake_id}_get_type())
+#define #{MACRO_OBJ}                (G_TYPE_CHECK_INSTANCE_CAST((obj), #{MACRO_TYPE}, #{camel_id}))
+#define #{MACRO_IS_OBJ}             (G_TYPE_CHECK_INSTANCE_TYPE((obj), #{MACRO_TYPE}))
+#define #{MACRO_GET_INTERFACE}      (G_TYPE_INSTANCE_GET_INTERFACE ((obj), #{MACRO_TYPE}, #{camel_id}Interface))
 
 /************ types ************/
 typedef struct _#{camel_id}Interface       #{camel_id}Interface;

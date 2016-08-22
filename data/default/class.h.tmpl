@@ -10,12 +10,29 @@
 /************ defines ************/
 G_BEGIN_DECLS
 
-#define #{prefix.upper()}_TYPE_#{big_snake_name}            (#{snake_id}_get_type())
-#define #{prefix.upper()}_#{big_snake_name}(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), #{prefix.upper()}_TYPE_#{big_snake_name}, #{camel_id}))
-#define #{prefix.upper()}_#{big_snake_name}_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass),  #{prefix.upper()}_TYPE_#{big_snake_name}, #{camel_id}Class))
-#define #{prefix.upper()}_IS_#{big_snake_name}(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), #{prefix.upper()}_TYPE_#{big_snake_name}))
-#define #{prefix.upper()}_IS_#{big_snake_name}_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass),  #{prefix.upper()}_TYPE_#{big_snake_name}))
-#define #{prefix.upper()}_GET_#{big_snake_name}_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), #{prefix.upper()}_TYPE_#{big_snake_name}, #{camel_id}Class))
+<?py if prefix.strip() == "" or prefix == None: ?>
+    <?py MACRO_TYPE = "TYPE_" + big_snake_name ?>
+    <?py MACRO_OBJ = big_snake_name ?>
+    <?py MACRO_OBJ_CLASS = big_snake_name + "_CLASS" ?>
+    <?py MACRO_IS_OBJ = "IS_" + big_snake_name ?>
+    <?py MACRO_IS_CLASS = "IS_" + big_snake_name + "_CLASS" ?>
+    <?py MACRO_GET_OBJ_CLASS = "GET_" + big_snake_name + "_CLASS" ?>
+<?py else: ?>
+    <?py MACRO_TYPE = prefix.upper() + "_TYPE_" + big_snake_name ?>
+    <?py MACRO_OBJ = prefix.upper() + "_" + big_snake_name ?>
+    <?py MACRO_OBJ_CLASS = prefix.upper() + "_" + big_snake_name + "_CLASS" ?>
+    <?py MACRO_IS_OBJ = prefix.upper() + "_IS_" + big_snake_name ?>
+    <?py MACRO_IS_CLASS = prefix.upper() + "_IS_" + big_snake_name + "_CLASS" ?>
+    <?py MACRO_GET_OBJ_CLASS = prefix.upper() + "_GET_" + big_snake_name + "_CLASS" ?>
+<?py #endif ?>
+
+
+#define #{MACRO_TYPE}               (#{snake_id}_get_type())
+#define #{MACRO_OBJ}                (G_TYPE_CHECK_INSTANCE_CAST((obj), #{MACRO_TYPE}, #{camel_id}))
+#define #{MACRO_OBJ_CLASS}          (G_TYPE_CHECK_CLASS_CAST((klass),  #{MACRO_TYPE}, #{camel_id}Class))
+#define #{MACRO_IS_OBJ}             (G_TYPE_CHECK_INSTANCE_TYPE((obj), #{MACRO_TYPE}))
+#define #{MACRO_IS_CLASS}           (G_TYPE_CHECK_CLASS_TYPE((klass),  #{MACRO_TYPE}))
+#define #{MACRO_GET_OBJ_CLASS}      (G_TYPE_INSTANCE_GET_CLASS ((obj), #{MACRO_TYPE}, #{camel_id}Class))
 
 /************ types ************/
 typedef struct _#{camel_id}            #{camel_id};

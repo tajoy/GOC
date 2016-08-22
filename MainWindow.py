@@ -89,6 +89,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.edtCamelID.textEdited.connect(self._onCamelIDChanged)
         self.edtBigSnakeID.textEdited.connect(self._onBigSnakeIDChanged)
 
+        self.edtParentPrefix.textEdited.connect(self._onParentPrefixChanged)
+
         scanSelf(self, QtWidgets.QLineEdit,
                 lambda name, value:
                     value.textEdited.connect(self.saveUIData)
@@ -177,6 +179,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if text.strip() == "":
             prefix = ""
             self.edtPrefix.setText("")
+            self.edtPrefix.setPlaceholderText("")
 
         strSnake = normal2Snake(name, prefix)
         strCamel = normal2Camel(name, prefix)
@@ -212,6 +215,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if len(self.edtBigSnakeID.text()) == 0:
             self.edtBigSnakeID.setPlaceholderText(strBigSnake)
 
+
+    def _onParentPrefixChanged(self, text):
+        if text.strip() == "":
+            self.edtParentPrefix.setText("")
+            self.edtParentPrefix.setPlaceholderText("")
+
     def _onClickedSelectDir(self):
         self.edtOutDir.setText(self.selectDialog.selectedFiles()[0])
         self.saveUIData()
@@ -238,7 +247,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         snake_id = getRealText(self.edtSnakeID)
         camel_id = getRealText(self.edtCamelID)
         big_snake_id = getRealText(self.edtBigSnakeID)
-        big_snake_name = big_snake_id[len(prefix)+1:]
+        if len(prefix) > 0:
+            big_snake_name = big_snake_id[len(prefix)+1:]
+        else:
+            big_snake_name = big_snake_id
         
         data = { 
             #元信息
