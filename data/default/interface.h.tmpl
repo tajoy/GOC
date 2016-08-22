@@ -24,7 +24,7 @@ G_BEGIN_DECLS
 
 
 #define #{MACRO_TYPE}               (#{snake_id}_get_type())
-#define #{MACRO_OBJ}(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), #{MACRO_TYPE}, #{camel_id}))
+#define #{MACRO_OBJ}(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), #{MACRO_TYPE}, #{camel_id}Interface))
 #define #{MACRO_IS_OBJ}(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), #{MACRO_TYPE}))
 #define #{MACRO_GET_INTERFACE}(obj)      (G_TYPE_INSTANCE_GET_INTERFACE ((obj), #{MACRO_TYPE}, #{camel_id}Interface))
 
